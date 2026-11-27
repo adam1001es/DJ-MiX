@@ -16,9 +16,13 @@ Die App analysiert das Ende von A und den Anfang von B (Tempo, Takt-Eins, Tonart
 
 | Ende von A | Dazwischen | Einstieg von B |
 |---|---|---|
-| Filter-Sweep, Loop-Roll, Bremse, Echo-Out, Riser | Rückwärts, B-Teaser, Scratch, Pause | Crash, Sub-Drop, Air-Horn |
+| Filter-Sweep, Bass raus, Ausblenden, Gate, Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne | Rückwärts, B-Teaser, Scratch, Pause | Crash, Sub-Drop, Air-Horn, Filter auf, Einblenden, Bass später |
 
-„Vorschlag“ wählt passende Effekte nach Tempo-Abstand, „Übergang anhören“ baut ein kurzes Stück zum Reinhören.
+„Effekt-Länge“ (1, 2 oder 4 Takte) gilt für Filter, Bass raus, Ausblenden, Snare-Roll, Riser sowie Filter auf, Einblenden und Bass später.
+
+„Vorschlag“ wählt passende Effekte nach Tempo-Abstand. „Übergang anhören“ spielt eine Probe: die letzten 12 s von A, den Übergang und die ersten 12 s von B. Nach jeder Änderung wird die Probe automatisch neu gebaut.
+
+In jedem Deck zeigt „Im Mix“, welcher Teil benutzt wird. Die gelbe Linie „Schnitt“ (A) und „Start“ (B) zeigt die genaue Stelle auf der Takt-Eins.
 
 ## Export
 
