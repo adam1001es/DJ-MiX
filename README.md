@@ -1,24 +1,40 @@
 # DJ-MiX
 
-Einfache DJ-Übergangs-App im Browser. Zwei Videos oder Songs laden – die App nimmt nur den Ton. Stelle zuschneiden, „Mixen“ drücken oder Auto-Mix machen lassen. Der neue Song startet genau auf dem nächsten Takt.
+DJ-Übergangs-App im Browser: **https://adam1001es.github.io/DJ-MiX/**
 
-## Funktionen
+Zwei Videos oder Songs laden – die App nimmt nur den Ton. Der Mixer analysiert das Ende von Song A und den Anfang von Song B und baut daraus einen Übergang, der musikalisch passt.
 
-- Zwei Decks (A und B), Videos (MP4, MOV, WebM) oder Songs (MP3, M4A, WAV) vom Handy oder PC laden – bei Videos wird nur der Ton genommen
-- Zuschneiden mit „Von“ und „Bis“: Der neue Song steigt bei „Von“ ein, der alte ist bei „Bis“ ausgeblendet
-- Auto-Mix: Der Übergang startet von selbst so, dass er am „Bis“-Punkt fertig ist
-- Tempo (BPM) wird automatisch erkannt, mit ½ und ×2 lässt es sich korrigieren
-- Stil „Auto“ wählt passend zu den Songs: weich bei ähnlichem Tempo, Echo-Out bei krassen Unterschieden
-- Fünf Übergänge zum selbst Wählen: Weich (Bass-Tausch), Filter, Echo-Out, Bremse (Plattenstopp), Harter Cut
-- Tempo angleichen: Auto, Immer oder Aus. Bei sehr unterschiedlichem Tempo (z. B. Rock 140 auf Rap 90) schlägt die App Echo, Bremse oder Cut vor
-- Crossfader zum Mixen per Hand
-- Tippen auf die Wellenform spult dorthin
-- Demo-Songs (Pop 120 BPM, Rap 90 BPM mit orientalischer Melodie) zum sofort Ausprobieren
+## Aufbau
 
-## Starten
+- **Oben: Deck A und Deck B.** Song oder Video laden (MP3, M4A, WAV, MP4, MOV, WebM), mit „Von“ und „Bis“ zuschneiden. Stille am Anfang und Ende wird automatisch abgeschnitten.
+- **Unten: der Mixer.** Er zeigt den Übergangs-Plan als Zeitleiste und führt ihn aus – auf Knopfdruck oder automatisch am Ende von A.
 
-`index.html` im Browser öffnen. Es wird nichts installiert, alles läuft im Browser.
+## Die Formel
 
-Als Webseite: in GitHub unter **Settings → Pages** den Branch `main` auswählen.
+Der Mixer analysiert die letzten ~32 Sekunden von A und die ersten ~32 Sekunden von B:
 
-Hinweis iPhone: Den Lautlos-Schalter ausschalten, sonst kommt kein Ton.
+1. **Tempo (BPM)** über Onset-Autokorrelation, fein nachjustiert auf 0,02 BPM.
+2. **Beat-Raster** an der Bassdrum ausgerichtet.
+3. **Takt-Eins (Downbeat)** aus Kick-Anteil, Energiewechseln und Akkordwechseln (Chroma).
+4. **Tonart** per Chroma und Krumhansl-Profil, angezeigt im Camelot-System (z. B. 8A).
+5. **Energie pro Takt:** wird das Outro von A leiser? Hat B ein ruhiges Intro und einen Drop?
+
+Daraus entscheidet „Auto“:
+
+| Situation | Übergang |
+|---|---|
+| Tempo fast gleich (≤ 6 %), Tonarten passen | **Langer Blend** 4–8 Takte, Bass-Tausch auf der Eins, Mitten getrennt |
+| Tempo fast gleich, Tonarten beißen sich | **Bass-Swap** 2 Takte, A wird dünn gefiltert |
+| Tempo 6–16 % auseinander | **Filter-Blend** mit resonantem Hochpass, B wird angeglichen und gleitet danach zurück |
+| Tempo weit auseinander (z. B. Rap 90 → Pop 128), A läuft voll | **Build & Drop**: Loop-Roll ½ → ¼ → ⅛ Schlag mit Riser, halber Schlag Stille, B fällt mit seinem Drop auf die Eins |
+| Tempo weit auseinander, Outro von A wird leiser | **Echo-Out** im Takt, B setzt einen Takt später ein |
+
+Der Übergang endet genau auf einer Takt-Eins am „Bis“-Punkt von A. Bei Blends liegt das Intro von B unter A, sodass sein Drop kommt, wenn A weg ist.
+
+Manuell wählbar: Blend, Filter, Echo-Out, Build & Drop, Bremse, Cut.
+
+## Hinweise
+
+- Tempo-Angleichen verändert auch die Tonhöhe, wie am Plattenspieler. Der Mixer rechnet das bei der Tonart mit ein.
+- iPhone: Lautlos-Schalter ausschalten, sonst kommt kein Ton.
+- Alles läuft im Browser, nichts wird hochgeladen.
