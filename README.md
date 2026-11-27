@@ -2,29 +2,23 @@
 
 Mixtape-App im Browser: **https://adam1001es.github.io/DJ-MiX/**
 
-Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A, dann eine eigene Beat-Brücke, dann Song B. Am Ende bekommst du den Mix als MP3.
+Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A, dann der Übergang aus Effekten, die du auswählst, dann Song B. Am Ende bekommst du den Mix als MP3.
 
 ## Prinzip
 
 - **Die Songs werden nie schneller oder langsamer.** A und B laufen immer im Originaltempo.
-- **Keine Überlappung.** Zwischen A und B baut die App einen eigenen Übergangs-Beat. Nur darin gleitet das Tempo von A zu B.
-- **Reihenfolge fest:** A → Brücke → B.
+- **Keine Überlappung.** Die Songs werden auf der Takt-Eins geschnitten, der Übergang besteht aus Effekten.
+- **Reihenfolge fest:** A → Übergang → B.
 
-## Die Formel
+## Übergang mit Effekt-Tasten
 
-Die App analysiert die letzten ~32 Sekunden von A und die ersten ~32 Sekunden von B: Tempo, Beat-Raster (an der Bassdrum), Takt-Eins (Kick, Energie- und Akkordwechsel), Tonart (Chroma, Camelot) und Energie pro Takt (Outro, Intro, Drop).
+Die App analysiert das Ende von A und den Anfang von B (Tempo, Takt-Eins, Tonart, Energie, Drop) und schneidet genau auf der Eins. Den Übergang baust du selbst aus Effekten, die sich kombinieren lassen:
 
-Daraus baut sie die Brücke:
+| Ende von A | Dazwischen | Einstieg von B |
+|---|---|---|
+| Filter-Sweep, Loop-Roll, Bremse, Echo-Out, Riser | Rückwärts, B-Teaser, Scratch, Pause | Crash, Sub-Drop, Air-Horn |
 
-1. **Schnitt auf der Eins:** A endet auf einer Takt-Eins (vor einem leisen Outro, falls vorhanden). B startet auf einer Takt-Eins – bei ruhigem Intro direkt am Drop.
-2. **A-Loop:** Der letzte Takt von A läuft als Loop weiter und wird mit Hochpass ausgeblendet.
-3. **Eigener Beat:** Drums, Bass und Akkorde. Der Stil passt zum Tempo (Hip-Hop, Club, Rock) und wechselt in der Mitte vom Stil von A zum Stil von B.
-4. **Tempo-Gleiten:** nur innerhalb der Brücke, weich von BPM A zu BPM B.
-5. **Harmonie:** Akkorde aus der Tonart von A, dann über eine Kadenz (Dominante) in die Tonart von B.
-6. **B-Teaser:** Im letzten Takt stottert der Anfang von B hoch (1 → ½ → ¼ → ⅛ Schlag) mit Snare-Roll und Riser, dann ein halber Schlag Pause, und B startet auf der Eins.
-7. **Lautstärke:** Die Brücke wird an A und B angepasst, der Mix wird gegen Übersteuern abgesichert.
-
-Länge: Auto (2, 4 oder 8 Takte je nach Tempo-Abstand) oder fest wählbar.
+„Vorschlag“ wählt passende Effekte nach Tempo-Abstand, „Übergang anhören“ baut ein kurzes Stück zum Reinhören.
 
 ## Export
 
