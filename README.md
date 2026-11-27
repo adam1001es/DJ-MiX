@@ -1,40 +1,37 @@
 # DJ-MiX
 
-DJ-Übergangs-App im Browser: **https://adam1001es.github.io/DJ-MiX/**
+Mixtape-App im Browser: **https://adam1001es.github.io/DJ-MiX/**
 
-Zwei Videos oder Songs laden – die App nimmt nur den Ton. Der Mixer analysiert das Ende von Song A und den Anfang von Song B und baut daraus einen Übergang, der musikalisch passt.
+Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A, dann eine eigene Beat-Brücke, dann Song B. Am Ende bekommst du den Mix als MP3.
 
-## Aufbau
+## Prinzip
 
-- **Oben: Deck A und Deck B.** Song oder Video laden (MP3, M4A, WAV, MP4, MOV, WebM), mit „Von“ und „Bis“ zuschneiden. Stille am Anfang und Ende wird automatisch abgeschnitten.
-- **Unten: der Mixer.** Er zeigt den Übergangs-Plan als Zeitleiste und führt ihn aus – auf Knopfdruck oder automatisch am Ende von A.
+- **Die Songs werden nie schneller oder langsamer.** A und B laufen immer im Originaltempo.
+- **Keine Überlappung.** Zwischen A und B baut die App einen eigenen Übergangs-Beat. Nur darin gleitet das Tempo von A zu B.
+- **Reihenfolge fest:** A → Brücke → B.
 
 ## Die Formel
 
-Der Mixer analysiert die letzten ~32 Sekunden von A und die ersten ~32 Sekunden von B:
+Die App analysiert die letzten ~32 Sekunden von A und die ersten ~32 Sekunden von B: Tempo, Beat-Raster (an der Bassdrum), Takt-Eins (Kick, Energie- und Akkordwechsel), Tonart (Chroma, Camelot) und Energie pro Takt (Outro, Intro, Drop).
 
-1. **Tempo (BPM)** über Onset-Autokorrelation, fein nachjustiert auf 0,02 BPM.
-2. **Beat-Raster** an der Bassdrum ausgerichtet.
-3. **Takt-Eins (Downbeat)** aus Kick-Anteil, Energiewechseln und Akkordwechseln (Chroma).
-4. **Tonart** per Chroma und Krumhansl-Profil, angezeigt im Camelot-System (z. B. 8A).
-5. **Energie pro Takt:** wird das Outro von A leiser? Hat B ein ruhiges Intro und einen Drop?
+Daraus baut sie die Brücke:
 
-Daraus entscheidet „Auto“:
+1. **Schnitt auf der Eins:** A endet auf einer Takt-Eins (vor einem leisen Outro, falls vorhanden). B startet auf einer Takt-Eins – bei ruhigem Intro direkt am Drop.
+2. **A-Loop:** Der letzte Takt von A läuft als Loop weiter und wird mit Hochpass ausgeblendet.
+3. **Eigener Beat:** Drums, Bass und Akkorde. Der Stil passt zum Tempo (Hip-Hop, Club, Rock) und wechselt in der Mitte vom Stil von A zum Stil von B.
+4. **Tempo-Gleiten:** nur innerhalb der Brücke, weich von BPM A zu BPM B.
+5. **Harmonie:** Akkorde aus der Tonart von A, dann über eine Kadenz (Dominante) in die Tonart von B.
+6. **B-Teaser:** Im letzten Takt stottert der Anfang von B hoch (1 → ½ → ¼ → ⅛ Schlag) mit Snare-Roll und Riser, dann ein halber Schlag Pause, und B startet auf der Eins.
+7. **Lautstärke:** Die Brücke wird an A und B angepasst, der Mix wird gegen Übersteuern abgesichert.
 
-| Situation | Übergang |
-|---|---|
-| Tempo fast gleich (≤ 6 %), Tonarten passen | **Langer Blend** 4–8 Takte, Bass-Tausch auf der Eins, Mitten getrennt |
-| Tempo fast gleich, Tonarten beißen sich | **Bass-Swap** 2 Takte, A wird dünn gefiltert |
-| Tempo 6–16 % auseinander | **Filter-Blend** mit resonantem Hochpass, B wird angeglichen und gleitet danach zurück |
-| Tempo weit auseinander (z. B. Rap 90 → Pop 128), A läuft voll | **Build & Drop**: Loop-Roll ½ → ¼ → ⅛ Schlag mit Riser, halber Schlag Stille, B fällt mit seinem Drop auf die Eins |
-| Tempo weit auseinander, Outro von A wird leiser | **Echo-Out** im Takt, B setzt einen Takt später ein |
+Länge: Auto (2, 4 oder 8 Takte je nach Tempo-Abstand) oder fest wählbar.
 
-Der Übergang endet genau auf einer Takt-Eins am „Bis“-Punkt von A. Bei Blends liegt das Intro von B unter A, sodass sein Drop kommt, wenn A weg ist.
+## Export
 
-Manuell wählbar: Blend, Filter, Echo-Out, Build & Drop, Bremse, Cut.
+- **MP3** (192 kbit/s) speichern oder über „Teilen“ weitergeben.
+- „Ganzer Mix“ oder „Nur Übergang“ (16 s A + Brücke + 16 s B).
 
 ## Hinweise
 
-- Tempo-Angleichen verändert auch die Tonhöhe, wie am Plattenspieler. Der Mixer rechnet das bei der Tonart mit ein.
-- iPhone: Lautlos-Schalter ausschalten, sonst kommt kein Ton.
+- iPhone: Lautlos-Schalter ausschalten, sonst kein Ton beim Vorhören.
 - Alles läuft im Browser, nichts wird hochgeladen.
