@@ -30,7 +30,8 @@ Spur **A** oben, drei Effekt-Spuren **FX1–FX3** in der Mitte, Spur **B** unten
 | Bereich | Effekte |
 |---|---|
 | Übergang (offen) | Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne, Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Crash, Sub-Drop, Air-Horn |
-| Scratches (im Übergang) | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
+| Scratches | 21 Techniken: Baby, Release, Scribble, Tear, 3-Tear, Chirp, Transformer, 1-Click Flare, 2-Click Orbit, 3-Click Flare, Crab, Twiddle, Hydroplane, Drag, Stab, Lazer, Boomerang, Autobahn, Prism, Zig-Zag, Euro-Tear. Realistische Platten-Simulation (Tonhöhe folgt der Handbewegung, rückwärts echt rückwärts, langsam = dumpf). Sound: B-Anfang, A-Ende oder „Ahh“. Länge 2/4/8/16 Schläge, jede 4. Zählzeit eine Variation. |
+| Beats | 20 Stile: Boom-Bap, Trap, House, Techno, Drum & Bass, Jungle, Reggaeton, Afrobeat, Amapiano, Breakbeat, Jersey Club, Phonk, UK Garage, Rock, Halftime, Moombahton, Baile Funk, Drill, Lo-Fi, Disco. Tempo A, B oder A→B gleitend, 1/2/4/8 Takte, 808-Bass in der Tonart der Songs, Fill am Ende. |
 | Ende von A | Filter-Sweep, Bass raus, Gate |
 | Anfang von B | Filter auf, Bass später |
 | Lautstärke | Regler für A, B und Effekte (0–150 %), Ausblenden A / Einblenden B: hart, kurz, mittel, lang |
