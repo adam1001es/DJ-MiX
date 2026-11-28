@@ -10,26 +10,26 @@ Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A,
 - **Keine Überlappung.** Die Songs werden auf der Takt-Eins geschnitten, der Übergang besteht aus Effekten.
 - **Reihenfolge fest:** A → Übergang → B.
 
-## Übergang mit Effekt-Tasten
+## Übergang – das Herzstück
 
-Die App analysiert das Ende von A und den Anfang von B (Tempo, Takt-Eins, Tonart, Energie, Drop) und schneidet genau auf der Eins. Den Übergang baust du selbst aus Effekten, die sich kombinieren lassen:
+### Spuren
+Unten im Übergang liegen zwei Spuren mit echter Wellenform – **A** oben, **B** unten – und dazwischen die Effekt-Spur. Die Spuren bleiben beim Scrollen am unteren Rand sichtbar.
 
-Alle Bereiche lassen sich auf- und zuklappen.
+- **A-Ende ziehen:** irgendwo in Spur A seitlich ziehen – A hört früher oder später auf.
+- **B verschieben:** in Spur B ziehen – Lücke größer/kleiner oder B überlappt A.
+- **B-Anfang kürzen:** die linke Kante (gelber Griff) von B ziehen.
+- **Einrasten:** Aus (ganz frei, auf Zehntelsekunden), Schlag oder Takt. **Zoom** − / + für feine Änderungen.
+- Kein Mindestabstand mehr – auch „Von“/„Bis“ in den Decks lassen sich beliebig kürzen.
 
+### Effekte
 | Bereich | Effekte |
 |---|---|
-| Ende von A | Filter-Sweep, Bass raus, Ausblenden, Gate, Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne |
-| Dazwischen | Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Stille, Pause |
-| Scratches | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
-| Einstieg von B | Crash, Sub-Drop, Air-Horn, Filter auf, Einblenden, Bass später |
+| Übergang (offen) | Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne, Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Stille, Pause, Crash, Sub-Drop, Air-Horn |
+| Scratches (im Übergang) | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
+| Ende von A (zugeklappt) | Filter-Sweep, Bass raus, Ausblenden, Gate |
+| Anfang von B (zugeklappt) | Filter auf, Einblenden, Bass später |
 
-„Effekt-Länge“ (1, 2 oder 4 Takte) gilt für Filter, Bass raus, Ausblenden, Snare-Roll, Riser sowie Filter auf, Einblenden und Bass später.
-
-„Vorschlag“ wählt passende Effekte nach Tempo-Abstand. „Übergang anhören“ spielt eine Probe: die letzten 12 s von A, den Übergang und die ersten 12 s von B. Nach jeder Änderung wird die Probe automatisch neu gebaut.
-
-Mit dem Finger ziehen: In der Zeitleiste A oder B verschieben, um die Schnittstelle zu ändern (rastet auf jede Takt-Eins ein). In den Wellenformen die Griffe von „Von“ und „Bis“ ziehen, um zu kürzen.
-
-In jedem Deck zeigt „Im Mix“, welcher Teil benutzt wird. Die gelbe Linie „Schnitt“ (A) und „Start“ (B) zeigt die genaue Stelle auf der Takt-Eins.
+„Übergang anhören“ spielt eine Probe (12 s A, Übergang, 12 s B) und baut sie nach jeder Änderung neu.
 
 ## Export
 
