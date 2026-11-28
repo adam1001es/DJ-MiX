@@ -246,6 +246,7 @@ const fmt=s=>{s=Math.max(0,Math.round(s));return (s/60|0)+':'+String(s%60).padSt
 
 /* ---------- Abspielen (Vorhören) ---------- */
 let SIL=null;
+window.addEventListener('error',e=>{try{$('#st').textContent='Fehler: '+(e.message||e)}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{$('#st').textContent='Fehler: '+((e.reason&&e.reason.message)||e.reason)}catch(_){}});
 function silentUrl(){const n=4410,ab=new ArrayBuffer(44+n*2),v=new DataView(ab),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))};
   w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,44100,true);v.setUint32(28,88200,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
   return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}))}
@@ -472,7 +473,7 @@ async function make(whole){
   try{const m=await renderMix(p,SEL,whole);MIX={...m,key,peaks:peaks(m.buf,700)};FILE=null;$('#share').disabled=true;
     $('#out').hidden=false;$('#olen').textContent=`${whole?'Ganzer Mix':'Probe'} · ${fmt(m.total)}`;$('#oinfo').textContent=`A ${fmt(p.aEnd-m.Ta)}–${fmt(p.aEnd)} → Übergang ${(m.TB-m.Ta).toFixed(1).replace('.',',')} s → B ${fmt(p.bStart)}–${fmt(p.bStart+m.total-m.TB)}`;$('#dlink').hidden=true;$('#ost').textContent='';
     say('Fertig.');}
-  catch(e){console.error(e);say('Das hat nicht geklappt. Versuch „Nur Übergang“ oder kürzere Songs.');busy=false;ui();return null}
+  catch(e){console.error(e);say('Das hat nicht geklappt ('+(e&&e.message||e)+'). Versuch „Nur Übergang“ oder kürzere Songs.');busy=false;ui();return null}
   busy=false;ui();return MIX;
 }
 async function hear(auto){init();const m=await make(false);if(m){mplay(Math.max(0,m.Ta-6));say(auto?'Probe aktualisiert – spielt ab 6 s vor dem Schnitt.':'Probe spielt ab 6 s vor dem Schnitt.');if(!auto)setTimeout(()=>$('#out').scrollIntoView({behavior:'smooth',block:'nearest'}),50)}}
