@@ -178,7 +178,7 @@ footer{color:#ffffffd9;font-size:14px;padding:0 max(4vw,14px) 32px;max-width:124
   <p id="ost"></p>
  </section>
 </main>
-<footer>Mit „Von“ und „Bis“ schneidest du jeden Song zu – die App rundet auf die nächste Takt-Eins. Die Songs laufen immer im Originaltempo. iPhone: Lautlos-Schalter ausschalten, sonst kein Ton beim Anhören. Alles passiert in deinem Browser, nichts wird hochgeladen.</footer>
+<footer>Mit „Von“ und „Bis“ schneidest du jeden Song zu – die App rundet auf die nächste Takt-Eins. Die Songs laufen immer im Originaltempo. Kein Ton am iPhone? Lautstärke hochdrehen und einmal auf die Seite tippen. Alles passiert in deinem Browser, nichts wird hochgeladen.</footer>
 
 <script>
 {
@@ -245,7 +245,16 @@ const tick=()=>new Promise(r=>setTimeout(r,20));
 const fmt=s=>{s=Math.max(0,Math.round(s));return (s/60|0)+':'+String(s%60).padStart(2,'0')};
 
 /* ---------- Abspielen (Vorhören) ---------- */
-function init(){if(ctx){if(ctx.state!=='running')ctx.resume();return}ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination)}
+let SIL=null;
+function silentUrl(){const n=4410,ab=new ArrayBuffer(44+n*2),v=new DataView(ab),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,44100,true);v.setUint32(28,88200,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}))}
+/* iPhone: Ton auch bei Lautlos-Schalter – Audio-Sitzung auf "Wiedergabe" stellen */
+function unmute(){try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(e){}
+  try{if(!SIL){SIL=document.createElement('audio');SIL.setAttribute('playsinline','');SIL.setAttribute('x-webkit-airplay','deny');SIL.loop=true;SIL.preload='auto';SIL.src=silentUrl()}if(SIL.paused){const p=SIL.play();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
+function init(){unmute();if(ctx){if(ctx.state!=='running')ctx.resume();return}ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination)}
+document.addEventListener('pointerdown',()=>{if(ctx){unmute();if(ctx.state!=='running')ctx.resume()}},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx&&ctx.state!=='running')ctx.resume()});
 function kill(o){const s=o.src;o.src=null;if(!s)return;s.onended=null;try{s.stop()}catch(e){}s.disconnect()}
 const dpos=d=>d.playing?d.off+(ctx.currentTime-d.t0):d.off;
 function dstop(d){if(!d.playing)return;d.off=dpos(d);d.playing=false;kill(d)}
@@ -254,7 +263,7 @@ function mstop(){if(!MP.playing)return;MP.off=mpos();MP.playing=false;kill(MP)}
 function stopAll(){if(!ctx)return;D.forEach(dstop);mstop()}
 function src(buf,off,o,onend){kill(o);const s=ctx.createBufferSource();s.buffer=buf;s.connect(master);const t=ctx.currentTime+.03;s.start(t,Math.max(0,Math.min(off,buf.duration-.05)));o.src=s;o.t0=t;o.off=Math.max(0,off);o.playing=true;s.onended=()=>{if(o.src===s){o.src=null;o.playing=false;onend();ui()}}}
 function dplay(d){init();stopAll();if(d.off<d.a||d.off>=d.b-.2)d.off=d.a;src(d.buf,d.off,d,()=>{d.off=d.a})}
-function mplay(off){init();stopAll();src(MIX.buf,off,MP,()=>{MP.off=0})}
+function mplay(off){init();stopAll();src(MIX.buf,off,MP,()=>{MP.off=0});setTimeout(()=>{if(ctx&&ctx.state!=='running')say('Kein Ton? Tipp einmal irgendwo auf die Seite und prüf die Lautstärke am iPhone.')},400)}
 
 /* ---------- Analyse ---------- */
 function mono(buf,t1,t2,q){const sr=buf.sampleRate,c0=buf.getChannelData(0),c1=buf.numberOfChannels>1?buf.getChannelData(1):c0;

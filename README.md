@@ -38,5 +38,5 @@ In jedem Deck zeigt „Im Mix“, welcher Teil benutzt wird. Die gelbe Linie „
 
 ## Hinweise
 
-- iPhone: Lautlos-Schalter ausschalten, sonst kein Ton beim Vorhören.
+- iPhone: Die App stellt die Audio-Wiedergabe so ein, dass der Ton auch bei Lautlos-Schalter kommt. Lautstärke hochdrehen.
 - Alles läuft im Browser, nichts wird hochgeladen.
