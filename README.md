@@ -20,6 +20,7 @@ Spur **A** oben, drei Effekt-Spuren **FX1–FX3** in der Mitte, Spur **B** unten
 - **A-Ende ziehen:** irgendwo in Spur A seitlich ziehen – A hört früher oder später auf.
 - **B verschieben:** in Spur B ziehen – Lücke größer/kleiner, B über die Effekte oder über A legen.
 - **B-Anfang kürzen:** die linke Kante (gelber Griff) von B ziehen.
+- **Rückgängig ↶ / Wiederholen ↷** (links in der Transport-Leiste, am Computer auch Strg/Cmd+Z): jede Änderung lässt sich zurücknehmen – bis zu 100 Schritte.
 - **Lautstärke in den Spuren:** In A und B liegt eine weiße Lautstärke-Linie mit Griff. Hoch/runter = lauter/leiser, seitlich = wie lang A ausblendet bzw. B einblendet.
 - **Ansicht:** startet mit „Alles“ (beide Spuren komplett), + / − zoomt zum Übergang, ⤢ zeigt wieder alles.
 - **Einrasten:** Aus (ganz frei, auf Zehntelsekunden), Schlag oder Takt. **Zoom** − / + für feine Änderungen.
