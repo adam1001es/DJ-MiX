@@ -1,5 +1,7 @@
 # DJ-MiX
 
+Dunkle DJ-Pult-Oberfläche, optimiert fürs iPhone quer: Decks A und B oben, Spuren in der Mitte, Effekt-Pads mit Reitern (Übergang · Scratch · Ende A · Anfang B) und Transport-Leiste unten.
+
 Mixtape-App im Browser: **https://adam1001es.github.io/DJ-MiX/**
 
 Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A, dann der Übergang aus Effekten, die du auswählst, dann Song B. Am Ende bekommst du den Mix als MP3.

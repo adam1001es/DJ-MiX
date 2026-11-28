@@ -2,192 +2,110 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DJ-MiX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE: Clubnacht-Energie, aber ein präzises Werkzeug
-   IDEA: ein DJ-Effektgerät – zwei Songs oben, dazwischen ein Pad mit Effekt-Tasten für den Übergang
-   PICTURE: die Übergangs-Zeitleiste: Ende von A, gewählte Effekte, Einstieg von B
-   COLOUR and TYPE: Kobalt-Grund, weiße Decks, dunkles Effekt-Pult, Koralle A, Blau B, Gelb für aktive Effekte; Archivo
-   LAYOUT: Decks A | B oben, Übergang volle Breite darunter, fertiger Mix ganz unten; am Handy untereinander */
-:root{color-scheme:light dark;--bg:light-dark(#2b3fd6,#0d1240);--panel:light-dark(#fbfaf7,#171d5c);--ink:light-dark(#12131a,#f2f3ff);--mute:light-dark(#5b5e6e,#aab0e0);--line:light-dark(#e4e2dc,#2c3488);--a:light-dark(#f2452f,#ff6b55);--b:light-dark(#2b3fd6,#8f9bff);--key:#ffd23f}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+/* VOICE: DJ-Pult – dunkel, kompakt, kein Text, alles griffbereit
+   IDEA: ein Zwei-Deck-Controller: Decks oben, Spuren in der Mitte, Effekt-Pads und Transport unten
+   PICTURE: die Spuren A / Effekte / B in der Mitte
+   COLOUR and TYPE: Graphit, Koralle A, Blau B, Gelb für aktive Pads; Archivo
+   LAYOUT: iPhone quer: Decks nebeneinander, Spuren volle Breite, Pads in zwei Reihen, Transport klebt unten */
+:root{color-scheme:dark;--bg:#0d0e13;--panel:#171922;--panel2:#20232f;--ink:#eef0ff;--mute:#9aa0c0;--line:#2b2f40;--a:#ff5a45;--b:#7088ff;--key:#ffd23f}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
-.band{padding:clamp(22px,4vw,44px) max(4vw,14px) 0;max-width:1240px;margin:0 auto}
-header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:end;justify-content:space-between;color:#fff}
-h1{font-weight:800;font-size:clamp(32px,5vw,48px);line-height:1.05;margin:0}
-header p{margin:6px 0 0;max-width:62ch;opacity:.88}
-.ghost{font:600 16px Archivo,sans-serif;color:#fff;background:transparent;border:2px solid #fff;border-radius:999px;min-height:44px;padding:0 20px;cursor:pointer}
-.ghost:hover{background:#ffffff1f}
-main{display:grid;gap:16px;padding:20px max(4vw,14px);max-width:1240px;margin:0 auto}
-.decks{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
-@media(min-width:760px){.decks{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
-.deck,.out{background:var(--panel);border-radius:20px;padding:18px;box-shadow:0 10px 30px #00000033}
-.dh{display:flex;gap:12px;align-items:center}
-.tag{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:22px;color:#fff}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 Archivo,system-ui,sans-serif;overflow-x:clip;-webkit-text-size-adjust:100%}
+button{font-family:inherit}
+.app{display:grid;gap:8px;padding:max(6px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));max-width:1500px;margin:0 auto;grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "a" "b" "lanes" "fx" "bar"}
+@media(min-width:640px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"top top" "a b" "lanes lanes" "fx fx" "bar bar"}}
+.top{grid-area:top;display:flex;align-items:center;gap:10px;min-height:32px}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap}.logo i{font-style:normal;color:var(--key)}
+.ghost{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:600 12px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
+.status{margin-left:auto;display:flex;gap:10px;font-size:12px;color:var(--mute);overflow:hidden;white-space:nowrap}
+.status p{margin:0;overflow:hidden;text-overflow:ellipsis}
+#d0{grid-area:a}#d1{grid-area:b}.lanes{grid-area:lanes}.fxp{grid-area:fx}.bar{grid-area:bar}
+.deck,.lanes,.fxp,.bar{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.deck{padding:7px}
+.dh{display:flex;align-items:center;gap:6px}
+.tag{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff}
 #d0 .tag{background:var(--a)}#d1 .tag{background:var(--b)}
-.nm{font-weight:600;font-size:17px;line-height:1.25;overflow-wrap:anywhere}
-.time{color:var(--mute);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.deck.on .tag{animation:pulse 1s ease-in-out infinite alternate}
-@keyframes pulse{to{transform:scale(.88)}}
-.wf{position:relative;height:110px;margin:14px 0;border-radius:12px;background:light-dark(#f0eee8,#10154a);cursor:pointer;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.deck.on .tag{box-shadow:0 0 0 2px var(--key)}
+.play{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);display:grid;place-items:center;cursor:pointer}
+.play:disabled{opacity:.3;cursor:default}.play svg{width:14px;height:14px}
+.meta{flex:1;min-width:0}
+.nm{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.time{font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bpm{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--mute)}
+.bpm input{width:60px;font-size:12px!important;height:30px;font:600 13px Archivo,sans-serif;text-align:right;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);padding:0 6px}
+.sm{min-width:30px;height:30px;padding:0 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font:600 12px Archivo,sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+.sm:disabled{opacity:.4;cursor:default}.sm.key{background:var(--key);color:#12131a;border-color:var(--key)}
+.load{position:relative;flex:none;display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font:600 12px Archivo,sans-serif;cursor:pointer}
+.load input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.wf{position:relative;height:64px;margin-top:6px;border-radius:8px;background:#0f1118;cursor:pointer;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .wf canvas{position:absolute;inset:0;width:100%;height:100%}
-.ctl,.bpm{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.bpm{margin-top:10px;color:var(--mute);font-size:14px}
-.play{width:56px;height:56px;border-radius:50%;border:0;background:var(--ink);color:var(--panel);display:grid;place-items:center;cursor:pointer;flex:none}
-.play:disabled{opacity:.3;cursor:default}
-.play svg{width:22px;height:22px}
-.load{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid var(--line);font-weight:600;cursor:pointer}
-.load:hover{border-color:var(--ink)}
-.load input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
-.bpm label{display:flex;gap:8px;align-items:center}
-.bpm input{width:86px;font:600 16px Archivo,sans-serif;color:var(--ink);background:transparent;border:2px solid var(--line);border-radius:10px;height:44px;padding:0 10px;text-align:right}
-.sm{min-width:44px;height:44px;border-radius:10px;border:2px solid var(--line);background:transparent;color:var(--ink);font:600 15px Archivo,sans-serif;cursor:pointer;padding:0 12px}
-.sm:disabled{opacity:.4;cursor:default}
-.cut{margin-top:12px;padding-top:12px;border-top:2px solid var(--line);display:grid;gap:4px}
-.cr{display:flex;align-items:center;gap:10px}
-.cl{width:28px;font-size:14px;color:var(--mute)}
-.cr input{flex:1;height:44px;accent-color:var(--ink)}
-.cv{width:44px;text-align:right;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
-
-.mix .big{min-height:52px;font-size:19px}.mix{--ink:#f2f3ff;--panel:light-dark(#14162b,#070a2a);--line:#30355f;--mute:#a9aed8;--a:#ff6b55;--b:#8f9bff;background:var(--panel);color:var(--ink);border-radius:24px;padding:clamp(18px,3vw,28px);box-shadow:0 14px 40px #00000055;display:grid;gap:18px}
-.mhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.mhead h2,.oh h2{font-size:clamp(26px,3.4vw,34px);line-height:1.05;margin:0}
-.mhead span{color:var(--mute);font-size:15px}
-#chain{margin:-6px 0 0;color:#d6d9f5;font-size:clamp(16px,2.4vw,21px);font-weight:600;line-height:1.3}
-@media(max-width:700px){#chain{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-#oinfo{margin:-6px 0 12px;font-size:15px;font-weight:600}
-.tl{position:relative;height:clamp(200px,34vw,260px);border-radius:14px;background:#ffffff0d}
+.lanes{padding:5px}
+.tl{position:relative;height:clamp(180px,30vw,280px);border-radius:10px;background:#11131b}
 .tl canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none}
-#tlhint{margin:0;font-size:12px;color:var(--mute)}
-.edbar{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
-.sub{font-size:13px;font-weight:600;color:var(--mute);margin:6px 0 5px}
-.grp .cy{color:var(--key)}
-.groups{grid-template-columns:minmax(0,1fr)!important}
-.groups{display:grid;gap:0 24px;grid-template-columns:minmax(0,1fr)}
-@media(min-width:900px){.groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.tlwrap{position:sticky;bottom:0;z-index:3;background:var(--panel);margin:0 calc(-1*clamp(18px,3vw,28px));padding:10px clamp(18px,3vw,28px) 8px;display:grid;gap:8px;border-radius:16px 16px 0 0;box-shadow:0 -10px 24px #0008;border-top:1.5px solid var(--line)}
-#fxinfo{margin:0;font-size:13px;color:#d6d9f5;min-height:1.4em}
-.opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--mute)}
-.opts{font-size:13px}.opts .chip{min-height:30px;padding:0 10px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--ink);font:600 14px Archivo,sans-serif;cursor:pointer}
-.opts .chip[aria-pressed=true]{background:var(--ink);color:var(--panel)}
-.use{font-size:14px;margin-top:-6px;color:var(--mute)}.use b{color:var(--ink)}
-.grp{border-top:1.5px solid var(--line)}
-.grp summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px;font-weight:600;color:var(--ink)}
-.grp summary::-webkit-details-marker{display:none}
-.grp summary::after{content:'';margin-left:auto;width:9px;height:9px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg) translateY(-3px);transition:transform .15s}
-.grp[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
-.grp summary span{font-size:13px;font-weight:600;color:#12131a;background:var(--key);border-radius:999px;padding:1px 8px}.grp summary span:empty{display:none}
-.grp .ca{color:var(--a)}.grp .cb{color:var(--b)}
-.grp .pads{padding-bottom:12px}
-.pads{display:flex;flex-wrap:wrap;gap:5px}
-.fx{min-height:32px;padding:0 10px;border-radius:999px;border:1.5px solid var(--line);background:#ffffff08;color:var(--ink);font:600 13px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
-.fx[aria-pressed=true]{background:var(--key);border-color:var(--key);color:#12131a}
+.edctl{position:absolute;right:5px;top:3px;display:flex;gap:4px}
+.chip{min-height:26px;padding:0 9px;border-radius:999px;border:1px solid var(--line);background:#0d0e13d9;color:var(--ink);font:600 12px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.fxp{padding:5px 7px 7px}
+.tabs{display:flex;gap:3px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-bottom:5px}.tabs::-webkit-scrollbar{display:none}
+.tab{height:30px;padding:0 10px;border-radius:8px;border:0;background:transparent;color:var(--mute);font:700 13px Archivo,sans-serif;white-space:nowrap;cursor:pointer;flex:none}
+.tab[aria-selected=true]{background:var(--panel2);color:var(--ink)}.tab span{color:var(--key);margin-left:3px}
+.opt{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--mute);white-space:nowrap;flex:none}.opt:first-of-type{margin-left:auto}.opt[hidden]{display:none}
+.pads{display:grid;grid-auto-flow:column;grid-auto-columns:max-content;grid-template-rows:repeat(2,auto);gap:5px;overflow-x:auto;scrollbar-width:none;justify-content:start;padding-bottom:2px}.pads::-webkit-scrollbar{display:none}.pads[hidden]{display:none}
+.fx{min-width:max-content;height:36px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font:600 12.5px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
+.fx[aria-pressed=true]{background:var(--key);border-color:var(--key);color:#12131a;box-shadow:0 0 14px #ffd23f40}
 .fx:disabled{opacity:.4;cursor:default}
-.acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.big{min-height:60px;padding:0 26px;border:0;border-radius:16px;background:var(--key);color:#12131a;font:800 21px Archivo,sans-serif;cursor:pointer;box-shadow:0 4px 0 #c99a00}
-.big:active{transform:translateY(2px);box-shadow:0 2px 0 #c99a00}
-.big:disabled{opacity:.5;cursor:default}
-.ol{min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:600 14px Archivo,sans-serif;cursor:pointer}
-#st{margin:0;font-size:14px;color:var(--mute);min-height:1.5em;flex-basis:100%}
-.facts{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
-@media(min-width:600px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(min-width:1000px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.fact{border-top:2px solid var(--line);padding-top:8px;font-size:15px}
-.fact b{display:block;font-size:14px;color:var(--mute);font-weight:600}
-.fact b.fa{color:var(--a)}.fact b.fb{color:var(--b)}
-.out[hidden]{display:none}
-.oh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.oh span{color:var(--mute);font-size:15px}
-.owf{height:clamp(170px,26vw,220px)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--mute);margin-bottom:14px}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.dl{min-height:52px;padding:0 20px;border-radius:14px;border:0;background:var(--key);color:#12131a;font:800 17px Archivo,sans-serif;cursor:pointer;box-shadow:0 3px 0 #c99a00}
-.dl.alt{background:transparent;border:2px solid var(--line);color:var(--ink);box-shadow:none}
-#dlink{font-weight:600;color:var(--ink)}
-#ost{margin:10px 0 0;font-size:14px;color:var(--mute);min-height:1.5em}
-button:focus-visible,input:focus-visible,.load:focus-within,a:focus-visible{outline:3px solid var(--key);outline-offset:2px}
-footer{color:#ffffffd9;font-size:14px;padding:0 max(4vw,14px) 32px;max-width:1240px;margin:0 auto}
-@media(prefers-reduced-motion:reduce){.deck.on .tag{animation:none}}
+.bar{position:sticky;bottom:max(4px,env(safe-area-inset-bottom));z-index:5;display:flex;gap:6px;align-items:center;padding:6px;overflow-x:auto;scrollbar-width:none;box-shadow:0 -6px 20px #000a}.bar::-webkit-scrollbar{display:none}
+.big{flex:none;height:38px;padding:0 16px;border:0;border-radius:10px;background:var(--key);color:#12131a;font:800 14px Archivo,sans-serif;white-space:nowrap;cursor:pointer}
+.big:disabled{opacity:.45;cursor:default}
+#out{display:flex;gap:6px;align-items:center;flex:none}#out[hidden]{display:none}
+.sep{flex:none;width:1px;height:24px;background:var(--line)}
+#dlink{font-size:12px;font-weight:600;color:var(--key);white-space:nowrap}
+button:focus-visible,input:focus-visible,.load:focus-within,a:focus-visible{outline:2px solid var(--key);outline-offset:2px}
+@media(orientation:landscape) and (max-height:520px){.app{gap:6px}.wf{height:44px}.tl{height:clamp(120px,42vh,210px)}.fx{height:32px}.logo{font-size:16px}}
 </style>
 </head>
 <body>
-<div class="band"><header>
-  <div><h1>DJ-MiX</h1><p>Zwei Videos oder Songs laden – die App nimmt nur den Ton. Erst Song A, dann Song B, geschnitten genau auf der Takt-Eins. Den Übergang baust du mit Effekt-Tasten und bekommst den Mix als MP3.</p></div>
-  <button class="ghost" id="demo">Demo-Songs laden</button>
-</header></div>
-
-<main>
- <div class="decks">
+<div class="app">
+ <div class="top"><div class="logo">DJ<i>-</i>MiX</div><button class="ghost" id="demo">Demo</button><div class="status"><p id="st" role="status"></p><p id="ost"></p></div></div>
   <section class="deck" id="d0">
-    <div class="dh"><span class="tag">A</span><div><div class="nm">Noch kein Song</div><div class="time">0:00</div></div></div>
-    <div class="wf"><canvas aria-label="Wellenform Deck A, tippen spult dorthin"></canvas></div><div class="use">Im Mix: –</div>
-    <div class="ctl"><button class="play" aria-label="Anhören" disabled></button><label class="load">Song / Video laden<input type="file" accept="audio/*,video/*"></label></div>
-    <div class="bpm"><label>BPM <input type="number" inputmode="decimal" step="0.1" min="40" max="250"></label><button class="sm half" aria-label="BPM halbieren">½</button><button class="sm dbl" aria-label="BPM verdoppeln">×2</button></div>
-    <div class="cut">
-      <div class="cr"><span class="cl">Von</span><input type="range" class="ra" min="0" max="1" step="0.0005" value="0" aria-label="Bereich Anfang"><span class="cv ta">0:00</span><button class="sm sa" aria-label="Anfang auf aktuelle Stelle">hier</button></div>
-      <div class="cr"><span class="cl">Bis</span><input type="range" class="rb" min="0" max="1" step="0.0005" value="1" aria-label="Bereich Ende"><span class="cv tb">0:00</span><button class="sm sb" aria-label="Ende auf aktuelle Stelle">hier</button></div>
-    </div>
+   <div class="dh"><span class="tag">A</span><button class="play" aria-label="Anhören" disabled></button><div class="meta"><div class="nm">Noch kein Song</div><div class="time">0:00</div></div>
+    <label class="bpm"><input type="number" inputmode="decimal" step="0.1" min="40" max="250" aria-label="BPM">BPM</label><button class="sm half" aria-label="BPM halbieren">½</button><button class="sm dbl" aria-label="BPM verdoppeln">×2</button><label class="load">Laden<input type="file" accept="audio/*,video/*"></label></div>
+   <div class="wf"><canvas aria-label="Wellenform A – Griffe ziehen zum Aürzen"></canvas></div>
+   <div class="cut" hidden><input type="range" class="ra" min="0" max="1" step="0.0005" value="0"><span class="ta"></span><button class="sa"></button><input type="range" class="rb" min="0" max="1" step="0.0005" value="1"><span class="tb"></span><button class="sb"></button></div><div class="use" hidden></div>
   </section>
   <section class="deck" id="d1">
-    <div class="dh"><span class="tag">B</span><div><div class="nm">Noch kein Song</div><div class="time">0:00</div></div></div>
-    <div class="wf"><canvas aria-label="Wellenform Deck B, tippen spult dorthin"></canvas></div><div class="use">Im Mix: –</div>
-    <div class="ctl"><button class="play" aria-label="Anhören" disabled></button><label class="load">Song / Video laden<input type="file" accept="audio/*,video/*"></label></div>
-    <div class="bpm"><label>BPM <input type="number" inputmode="decimal" step="0.1" min="40" max="250"></label><button class="sm half" aria-label="BPM halbieren">½</button><button class="sm dbl" aria-label="BPM verdoppeln">×2</button></div>
-    <div class="cut">
-      <div class="cr"><span class="cl">Von</span><input type="range" class="ra" min="0" max="1" step="0.0005" value="0" aria-label="Bereich Anfang"><span class="cv ta">0:00</span><button class="sm sa" aria-label="Anfang auf aktuelle Stelle">hier</button></div>
-      <div class="cr"><span class="cl">Bis</span><input type="range" class="rb" min="0" max="1" step="0.0005" value="1" aria-label="Bereich Ende"><span class="cv tb">0:00</span><button class="sm sb" aria-label="Ende auf aktuelle Stelle">hier</button></div>
-    </div>
+   <div class="dh"><span class="tag">B</span><button class="play" aria-label="Anhören" disabled></button><div class="meta"><div class="nm">Noch kein Song</div><div class="time">0:00</div></div>
+    <label class="bpm"><input type="number" inputmode="decimal" step="0.1" min="40" max="250" aria-label="BPM">BPM</label><button class="sm half" aria-label="BPM halbieren">½</button><button class="sm dbl" aria-label="BPM verdoppeln">×2</button><label class="load">Laden<input type="file" accept="audio/*,video/*"></label></div>
+   <div class="wf"><canvas aria-label="Wellenform B – Griffe ziehen zum Bürzen"></canvas></div>
+   <div class="cut" hidden><input type="range" class="ra" min="0" max="1" step="0.0005" value="0"><span class="ta"></span><button class="sa"></button><input type="range" class="rb" min="0" max="1" step="0.0005" value="1"><span class="tb"></span><button class="sb"></button></div><div class="use" hidden></div>
   </section>
+ <section class="lanes" aria-label="Spuren"><div class="tl"><canvas id="tl" aria-label="Spuren A, Effekte, B"></canvas>
+  <div class="edctl"><button class="chip" id="zout" aria-label="Zoom raus">−</button><button class="chip" id="zin" aria-label="Zoom rein">+</button><span id="snap"></span></div></div></section>
+ <section class="fxp" aria-label="Effekte">
+  <div class="tabs" role="tablist">
+   <button class="tab" data-tab="X" aria-selected="true">Übergang<span id="nX"></span></button>
+   <button class="tab" data-tab="S" aria-selected="false">Scratch<span id="nS"></span></button>
+   <button class="tab" data-tab="A" aria-selected="false">Ende A<span id="nA"></span></button>
+   <button class="tab" data-tab="B" aria-selected="false">Anfang B<span id="nB"></span></button>
+   <span class="opt" data-for="XAB">Länge<span id="elen"></span></span>
+   <span class="opt" data-for="S" hidden><span id="ssrc"></span><span id="slen"></span></span>
+  </div>
+  <div class="pads" id="gX"></div><div class="pads" id="gS" hidden></div><div class="pads" id="gA" hidden></div><div class="pads" id="gB" hidden></div>
+ </section>
+ <div class="bar">
+  <button class="big" id="hear" disabled>Übergang anhören</button>
+  <span id="out" hidden><button class="play" id="op" aria-label="Abspielen"></button><span class="time" id="ot">0:00</span><button class="sm" id="ob">⟲ Übergang</button></span>
+  <span class="sep"></span>
+  <button class="sm" id="sug" disabled>Vorschlag</button><button class="sm" id="clr" disabled>Alle aus</button>
+  <span class="sep"></span>
+  <button class="sm key" id="mp3w">MP3 Mix</button><button class="sm" id="mp3s">MP3 Übergang</button><button class="sm" id="share" disabled>Teilen</button><a id="dlink" hidden>Datei</a>
  </div>
-
- <section class="mix" aria-label="Übergang">
-  <div class="mhead"><h2>Übergang</h2><span>das Herzstück – hier passiert der Wechsel</span></div>
-  <p id="chain">Lade zwei Songs.</p>
-  <div class="groups">
-    <details class="grp" data-g="X"><summary><b class="cy">Übergang – Effekte</b><span id="nX"></span></summary>
-      <div class="pads" id="gX"></div>
-      <div class="sub">Scratches</div><div class="pads" id="gS"></div>
-      <div class="opts" style="margin:6px 0 12px">Scratch-Sound:<span id="ssrc"></span> Länge:<span id="slen"></span></div></details>
-    <details class="grp" data-g="A"><summary><b class="ca">Ende von A</b><span id="nA"></span></summary><div class="pads" id="gA"></div></details>
-    <details class="grp" data-g="B"><summary><b class="cb">Anfang von B</b><span id="nB"></span></summary><div class="pads" id="gB"></div></details>
-  </div>
-  <p id="fxinfo">Tipp auf einen Effekt – hier steht, was er macht.</p>
-  <div class="opts">Effekt-Länge:<span id="elen"></span></div>
-  <div class="tlwrap">
-    <div class="tl"><canvas id="tl" aria-label="Spuren: A-Ende ziehen, B verschieben, B-Anfang an der linken Kante kürzen"></canvas></div>
-    <div class="edbar"><span class="opts">Zoom:<button class="chip" id="zout" aria-label="Weiter weg">−</button><button class="chip" id="zin" aria-label="Näher ran">+</button></span><span class="opts">Einrasten:<span id="snap"></span></span></div>
-    <p id="tlhint">A: Ende ziehen · B: verschieben · B-Anfang: linke Kante ziehen</p>
-  </div>
-  <div class="acts">
-    <button class="big" id="hear" disabled>Übergang anhören</button>
-    <button class="ol" id="sug" disabled>Vorschlag</button>
-    <button class="ol" id="clr" disabled>Alle aus</button>
-    <p id="st" role="status">Lade zwei Songs von deinem Handy oder probier die Demo-Songs.</p>
-  </div>
-  <div class="facts">
-    <div class="fact"><b class="fa">A · Ende</b><span id="fa">–</span></div>
-    <div class="fact"><b class="fb">B · Anfang</b><span id="fb">–</span></div>
-    <div class="fact"><b>Tempo</b><span id="ft">–</span></div>
-    <div class="fact"><b>Tonart</b><span id="fh">–</span></div>
-  </div>
- </section>
-
- <section class="out" id="out" hidden aria-label="Fertiger Mix">
-  <div class="oh"><h2>Dein Mix</h2><span id="olen"></span></div>
-  <div class="wf owf"><canvas id="ow" aria-label="Wellenform des Mix, tippen spult dorthin"></canvas></div>
-  <div class="legend"><span><i style="background:var(--a)"></i>Spur A</span><span><i style="background:var(--key)"></i>Effekte</span><span><i style="background:var(--b)"></i>Spur B</span></div>
-  <p id="oinfo"></p>
-  <div class="ctl"><button class="play" id="op" aria-label="Mix abspielen"></button><button class="sm" id="ob">Zum Übergang</button><span class="time" id="ot">0:00</span></div>
-  <div class="ctl" style="margin-top:14px"><button class="dl" id="mp3w">Ganzer Mix als MP3</button><button class="dl alt" id="mp3s">Nur Übergang als MP3</button><button class="sm" id="share" disabled>Teilen</button><a id="dlink" hidden>Falls nichts passiert: hier tippen</a></div>
-  <p id="ost"></p>
- </section>
-</main>
-<footer>Mit „Von“ und „Bis“ schneidest du jeden Song zu – die App rundet auf die nächste Takt-Eins. Die Songs laufen immer im Originaltempo. Kein Ton am iPhone? Lautstärke hochdrehen und einmal auf die Seite tippen. Alles passiert in deinem Browser, nichts wird hochgeladen.</footer>
-
+</div>
+<div hidden><p id="chain"></p><p id="fxinfo"></p><span id="fa"></span><span id="fb"></span><span id="ft"></span><span id="fh"></span><span id="olen"></span><p id="oinfo"></p><div><canvas id="ow"></canvas></div><p id="tlhint"></p></div>
 <script>
 {
 const $=(s,r=document)=>r.querySelector(s);
@@ -373,11 +291,11 @@ function layout(p,sel){const g=[];let t=0;
   const TB=Math.max(t+bOff,-Math.min(8,p.aEnd-p.A.a));return{gap:g,Gfx:t,TB,pauseAt:Math.min(pa,Math.max(0,TB))}}
 function replan(){clearTimeout(rpT);rpT=setTimeout(()=>{try{PL=makePlan()}catch(e){console.error(e);PL=null}if(PL&&!userSel)SEL=suggest(PL);renderPads();renderPlan();drawTL();ui()},80)}
 function renderPads(){
-  for(const g of ['A','X','B']){const n=EL.filter(e=>(e[3]===g||(g==='X'&&e[3]==='S'))&&SEL.has(e[0])).length;$('#n'+g).textContent=n?n+' an':'';const det=$(`details[data-g=${g}]`);if(det&&!det.dataset.init){det.open=!!OPEN[g];det.dataset.init=1}}
-  $('#ssrc').innerHTML=[['B','B-Anfang'],['A','A-Ende']].map(([v,l])=>`<button class="chip" data-sv="${v}" aria-pressed="${v===scSrc}">${l}</button>`).join('');
-  $('#slen').innerHTML=[1,2,4].map(v=>`<button class="chip" data-sl="${v}" aria-pressed="${v===scLen}">${v} ${v===1?'Schlag':'Schläge'}</button>`).join('');
+  for(const g of ['A','X','S','B']){const n=EL.filter(e=>e[3]===g&&SEL.has(e[0])).length;$('#n'+g).textContent=n?String(n):'';const det=$(`details[data-g=${g}]`);if(det&&!det.dataset.init){det.open=!!OPEN[g];det.dataset.init=1}}
+  $('#ssrc').innerHTML=[['B','B'],['A','A']].map(([v,l])=>`<button class="chip" data-sv="${v}" aria-pressed="${v===scSrc}">${l}</button>`).join('');
+  $('#slen').innerHTML=[1,2,4].map(v=>`<button class="chip" data-sl="${v}" aria-pressed="${v===scLen}">${v}×</button>`).join('');
   for(const g of ['A','X','S','B'])$('#g'+g).innerHTML=EL.filter(e=>e[3]===g).map(([id,n,d])=>`<button class="fx" data-id="${id}" title="${d}" aria-pressed="${SEL.has(id)}"${PL?'':' disabled'}>${n}</button>`).join('');
-  $('#elen').innerHTML=[1,2,4].map(v=>`<button class="chip" data-v="${v}" aria-pressed="${v===effLen}">${v} ${v===1?'Takt':'Takte'}</button>`).join('');
+  $('#elen').innerHTML=[1,2,4].map(v=>`<button class="chip" data-v="${v}" aria-pressed="${v===effLen}">${v}</button>`).join('');
 }
 function chainText(){
   if(!PL)return 'Lade zwei Songs.';
@@ -482,11 +400,11 @@ async function make(whole){
   busy=true;stopAll();ui();say(whole?'Baue den ganzen Mix…':'Baue den Übergang…');await tick();
   try{const m=await renderMix(p,SEL,whole);MIX={...m,key,peaks:peaks(m.buf,700)};{const N=700,dc=m.total/N,la=new Float32Array(N),lb=new Float32Array(N),ga=gmax(p.A),gb=gmax(p.B),aFrom=p.aEnd-m.Ta;for(let i=0;i<N;i++){const t=i*dc;if(t<m.Ta)la[i]=pk(p.A.buf,aFrom+t,aFrom+t+dc)/ga;if(t>=m.TB){const sb=p.bStart+t-m.TB;if(sb<p.B.buf.duration)lb[i]=pk(p.B.buf,sb,sb+dc)/gb}}MIX.lanes={la,lb,gap:layout(p,SEL).gap,sel:new Set(SEL)}}FILE=null;$('#share').disabled=true;
     $('#out').hidden=false;$('#olen').textContent=`${whole?'Ganzer Mix':'Probe'} · ${fmt(m.total)}`;{const gp=m.TB-m.Ta;$('#oinfo').textContent=`A ${fmt1(p.aEnd-m.Ta)}–${fmt1(p.aEnd)} → ${gp>=0?'Übergang '+gp.toFixed(1).replace('.',',')+' s':'Überlappung '+(-gp).toFixed(1).replace('.',',')+' s'} → B ab ${fmt1(p.bStart)}`}$('#dlink').hidden=true;$('#ost').textContent='';
-    say('Fertig.');}
+    say('');}
   catch(e){console.error(e);say('Das hat nicht geklappt ('+(e&&e.message||e)+'). Versuch „Nur Übergang“ oder kürzere Songs.');busy=false;ui();return null}
   busy=false;ui();return MIX;
 }
-async function hear(auto){init();const m=await make(false);if(m){mplay(Math.max(0,m.Ta-6));say(auto?'Probe aktualisiert – spielt ab 6 s vor dem Schnitt.':'Probe spielt ab 6 s vor dem Schnitt.');if(!auto)setTimeout(()=>$('#out').scrollIntoView({behavior:'smooth',block:'nearest'}),50)}}
+async function hear(auto){init();const m=await make(false);if(m){mplay(Math.max(0,m.Ta-6));say(auto?'':'');}}
 function loadLame(){if(window.lamejs)return Promise.resolve();if(!lameP)lameP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
   s.onload=()=>window.lamejs?res():rej(new Error('lamejs'));s.onerror=()=>{lameP=null;rej(new Error('lamejs'))};document.head.appendChild(s)});return lameP}
 async function toMp3(buf,onp){
@@ -521,9 +439,9 @@ function drawTL(){
   const cv=$('#tl'),dpr=devicePixelRatio||1,W=Math.round(cv.clientWidth*dpr),H=Math.round(cv.clientHeight*dpr);if(!W||!H)return;
   if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}const g=cv.getContext('2d');g.clearRect(0,0,W,H);
   const p=PL,fs=11*dpr;g.font=`600 ${fs}px Archivo,sans-serif`;
-  if(!p){g.fillStyle='#ffffff30';g.fillRect(0,H/2,W,dpr);g.fillStyle='#a9aed8';g.fillText('Lade zwei Songs – dann erscheinen hier die Spuren A und B.',8*dpr,H/2-8*dpr);TLX=null;return}
+  if(!p){g.fillStyle='#ffffff30';g.fillRect(0,H/2,W,dpr);g.fillStyle='#a9aed8';g.fillText('A + B laden',8*dpr,H/2-8*dpr);TLX=null;return}
   const L=layout(p,SEL),G=L.TB,half=ZOOM*.45,v0=-half,v1=Math.max(G,0)+half,X=t=>(t-v0)/(v1-v0)*W,T=x=>v0+x/W*(v1-v0);TLX={v0,v1,G,Gfx:L.Gfx};
-  const cA=getComputedStyle($('.fa')).color,cB=getComputedStyle($('.fb')).color,Y='#ffd23f',pa=p.pbA,pb=p.pbB,EB=4*effLen*pa,EBb=4*effLen*pb,has=k=>SEL.has(k);
+  const cA=(getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#ff5a45'),cB=(getComputedStyle(document.documentElement).getPropertyValue('--b').trim()||'#7088ff'),Y='#ffd23f',pa=p.pbA,pb=p.pbB,EB=4*effLen*pa,EBb=4*effLen*pb,has=k=>SEL.has(k);
   const top=16*dpr,bot=H-18*dpr,lh=bot-top,hA=lh*.38,hF=lh*.24,yA=top,yF=top+hA,yB=yF+hF,hB=lh-hA-hF,A=p.A,B=p.B,gA=gmax(A),gB=gmax(B);
   g.fillStyle='#ffffff09';g.fillRect(0,yA,W,hA-3*dpr);g.fillRect(0,yB+3*dpr,W,hB-3*dpr);
   /* Taktraster */
@@ -560,7 +478,8 @@ function drawTL(){
   g.font=`600 ${fs}px Archivo,sans-serif`;g.fillStyle='#d6d9f5';
   const ta=`A endet ${fmt1(p.aEnd)}`,tb=`B ab ${fmt1(p.bStart)}`,gp=G>=0?`Lücke ${G.toFixed(1).replace('.',',')} s`:`Überlappung ${(-G).toFixed(1).replace('.',',')} s`;
   const wa=g.measureText(ta).width,wb=g.measureText(tb).width,wg=g.measureText(gp).width;let xa=Math.max(2*dpr,Math.min(X(0)-wa-6*dpr,W-wa-wb-14*dpr)),xb=Math.min(W-wb-2*dpr,Math.max(X(G)+6*dpr,xa+wa+8*dpr));
-  g.fillText(ta,xa,H-5*dpr);g.fillText(tb,xb,H-5*dpr);g.fillStyle=Y;const xg=Math.max(2*dpr,Math.min(W-wg-2*dpr,(X(0)+X(Math.max(G,0)))/2-wg/2));g.fillText(gp,xg,top-4*dpr);
+  g.fillText(ta,xa,H-5*dpr);g.fillText(tb,xb,H-5*dpr);
+  if(MIX&&ctx&&(MP.playing||MP.off>0)){const te=mpos()-MIX.Ta;if(te>v0&&te<v1){g.fillStyle='#fff';g.fillRect(X(te)-dpr,top,2*dpr,lh)}}g.fillStyle=Y;const xg=Math.max(2*dpr,Math.min(W-wg-2*dpr,(X(0)+X(Math.max(G,0)))/2-wg/2));g.fillText(gp,xg,top-4*dpr);
 }
 new ResizeObserver(()=>drawTL()).observe($('#tl'));
 
@@ -599,7 +518,7 @@ function demo(){
       for(let k=0;k<8;k++){const i=mel[(bar%2)*8+k];if(i>=0)T.tone(t0+k*2*s,s*1.6,H[i],full?.13:.11,[1,.7,.45,.3,.2,.1])}}});
     Object.assign(D[0],{buf:pop,name:'Pop-Demo 120 BPM',bpm:120,peaks:peaks(pop),a:0,b:audible(pop)[1],aAuto:true,bAuto:true,off:0,video:false,_tail:null,_head:null});
     Object.assign(D[1],{buf:rap,name:'Rap-Demo 90 BPM',bpm:90,peaks:peaks(rap),a:0,b:audible(rap)[1],aAuto:true,bAuto:true,off:0,video:false,_tail:null,_head:null});
-    userSel=false;bOff=0;say('Demo bereit: Wähle Effekte und tippe auf „Übergang anhören“.');replan();ui();
+    userSel=false;bOff=0;say('');replan();ui();
   },30);
 }
 function ui(){
@@ -610,7 +529,7 @@ function ui(){
     const b=$('.play',d.el);b.disabled=!d.buf;b.innerHTML=d.playing?ICON.pause:ICON.play;b.setAttribute('aria-label',d.playing?'Pause':'Anhören');d.el.classList.toggle('on',d.playing);
     const bi=$('.bpm input',d.el);if(document.activeElement!==bi)bi.value=d.bpm?d.bpm.toFixed(1):''}
   const ok=!!PL&&!busy;$('#hear').disabled=!ok;$('#sug').disabled=!ok;$('#clr').disabled=!ok;$('#mp3w').disabled=busy;$('#mp3s').disabled=busy;
-  $('#hear').textContent=busy?'Baut…':'Übergang anhören';
+  $('#hear').textContent=busy?'Baut…':'▶ Übergang';
   $('#op').innerHTML=MP.playing?ICON.pause:ICON.play;$('#op').setAttribute('aria-label',MP.playing?'Pause':'Mix abspielen');
 }
 function wave(cv,pk,pos,dur,colorAt,shade){
@@ -641,7 +560,7 @@ function loop(){
       g.globalAlpha=1;g.fillStyle=ink;for(const x of [xa,xb]){g.fillRect(x-dpr,0,2*dpr,Ht);g.beginPath();g.moveTo(x-7*dpr,0);g.lineTo(x+7*dpr,0);g.lineTo(x,10*dpr);g.fill();g.beginPath();g.arc(Math.min(W-9*dpr,Math.max(9*dpr,x)),Ht/2,9*dpr,0,7);g.fill()}
       if(PL&&(PL.A===d||PL.B===d)){const t=d.i===0?PL.aEnd:PL.bStart,x=t/du*W,lab=d.i===0?'Schnitt':'Start',fs=11*dpr;g.fillStyle='#e0a800';g.fillRect(x-1.5*dpr,0,3*dpr,Ht);g.font=`700 ${fs}px Archivo,sans-serif`;const w=g.measureText(lab).width,lx=d.i===0?x-w-6*dpr:x+6*dpr;g.fillStyle='rgba(0,0,0,.65)';g.fillRect(lx-3*dpr,Ht-fs-8*dpr,w+6*dpr,fs+6*dpr);g.fillStyle='#ffd23f';g.fillText(lab,lx,Ht-7*dpr)}}:null);
   }
-  if(MIX){const pos=ctx?mpos():0;$('#ot').textContent=fmt(pos)+' / '+fmt(MIX.total);drawOut(pos)}
+  if(MIX){const pos=ctx?mpos():0;$('#ot').textContent=fmt(pos)+' / '+fmt(MIX.total);if(MP.playing&&frame%2===0)drawTL()}
   requestAnimationFrame(loop);
 }
 
@@ -666,7 +585,7 @@ for(const d of D){
   $('.half',d.el).onclick=()=>{if(d.bpm){d.bpm/=2;replan();ui()}};
   $('.dbl',d.el).onclick=()=>{if(d.bpm){d.bpm*=2;replan();ui()}};
 }
-document.querySelector('.groups').onclick=e=>{const b=e.target.closest('.fx');if(!b||b.disabled)return;const id=b.dataset.id;userSel=true;
+document.querySelector('.fxp').onclick=e=>{const b=e.target.closest('.fx');if(!b||b.disabled)return;const id=b.dataset.id;userSel=true;
   if(SEL.has(id))SEL.delete(id);else{SEL.add(id);if(id==='roll')SEL.delete('brake');if(id==='brake')SEL.delete('roll')}
   const ef=EL.find(x=>x[0]===id);$('#fxinfo').textContent=`${ef[1]}${SEL.has(id)?' an':' aus'} – ${ef[2]}`;renderPads();renderPlan();drawTL();autoHear()};
 {const tl=$('#tl');
@@ -679,8 +598,9 @@ document.querySelector('.groups').onclick=e=>{const b=e.target.closest('.fx');if
    renderPlan();drawTL();ui()};
  tl.onpointerup=tl.onpointercancel=()=>{if(!ED)return;const m=ED.moved;ED=null;drawTL();if(m){replan();autoHear()}}}
 $('#zin').onclick=()=>{ZOOM=Math.max(2,ZOOM/1.6);drawTL()};$('#zout').onclick=()=>{ZOOM=Math.min(80,ZOOM*1.6);drawTL()};
-function renderSnap(){$('#snap').innerHTML=[['off','Aus'],['beat','Schlag'],['bar','Takt']].map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${v===SNAP}">${l}</button>`).join('')}
-renderSnap();$('#snap').onclick=e=>{const b=e.target.closest('button');if(!b)return;SNAP=b.dataset.v;renderSnap()};
+function renderSnap(){$('#snap').innerHTML=`<button class="chip" aria-label="Einrasten">Raster: ${({off:'frei',beat:'Schlag',bar:'Takt'})[SNAP]}</button>`}
+renderSnap();$('#snap').onclick=()=>{SNAP=({off:'beat',beat:'bar',bar:'off'})[SNAP];renderSnap()};
+document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;const k=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));['X','S','A','B'].forEach(g=>$('#g'+g).hidden=g!==k);document.querySelectorAll('.opt').forEach(o=>o.hidden=!o.dataset.for.includes(k))});
 document.querySelectorAll('details.grp').forEach(d=>d.addEventListener('toggle',()=>{OPEN[d.dataset.g]=d.open;try{localStorage.setItem('djmix-open2',JSON.stringify(OPEN))}catch(_){}}));
 $('#ssrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;scSrc=b.dataset.sv;renderPads();drawTL();autoHear()};
 $('#slen').onclick=e=>{const b=e.target.closest('button');if(!b)return;scLen=+b.dataset.sl;renderPads();renderPlan();drawTL();autoHear()};
