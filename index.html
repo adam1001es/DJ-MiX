@@ -58,6 +58,12 @@ button{font-family:inherit}
 .fx{min-width:max-content;height:36px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font:600 12.5px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
 .fx[aria-pressed=true]{background:var(--key);border-color:var(--key);color:#12131a;box-shadow:0 0 14px #ffd23f40}
 .fx:disabled{opacity:.4;cursor:default}
+.vol{display:grid;gap:6px}.vol[hidden]{display:none}
+.vrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vrow b{width:22px;font-size:13px}.vrow .va{color:var(--a)}.vrow .vb{color:var(--b)}.vrow .vf{color:var(--key)}
+.vrow input[type=range]{flex:1 1 140px;max-width:260px;height:30px;accent-color:var(--key)}
+.vrow output{width:42px;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.vrow .lbl{font-size:11px;color:var(--mute)}
 .bar{position:sticky;bottom:max(4px,env(safe-area-inset-bottom));z-index:5;display:flex;gap:6px;align-items:center;padding:6px;overflow-x:auto;scrollbar-width:none;box-shadow:0 -6px 20px #000a}.bar::-webkit-scrollbar{display:none}
 .big{flex:none;height:38px;padding:0 16px;border:0;border-radius:10px;background:var(--key);color:#12131a;font:800 14px Archivo,sans-serif;white-space:nowrap;cursor:pointer}
 .big:disabled{opacity:.45;cursor:default}
@@ -84,17 +90,18 @@ button:focus-visible,input:focus-visible,.load:focus-within,a:focus-visible{outl
    <div class="cut" hidden><input type="range" class="ra" min="0" max="1" step="0.0005" value="0"><span class="ta"></span><button class="sa"></button><input type="range" class="rb" min="0" max="1" step="0.0005" value="1"><span class="tb"></span><button class="sb"></button></div><div class="use" hidden></div>
   </section>
  <section class="lanes" aria-label="Spuren"><div class="tl"><canvas id="tl" aria-label="Spuren A, Effekte, B"></canvas>
-  <div class="edctl"><button class="chip" id="zout" aria-label="Zoom raus">−</button><button class="chip" id="zin" aria-label="Zoom rein">+</button><span id="snap"></span></div></div></section>
+  <div class="edctl"><button class="chip" id="zout" aria-label="Zoom raus">−</button><button class="chip" id="zin" aria-label="Zoom rein">+</button><button class="chip" id="zfit" aria-label="Alles zeigen">⤢</button><span id="snap"></span></div></div></section>
  <section class="fxp" aria-label="Effekte">
   <div class="tabs" role="tablist">
    <button class="tab" data-tab="X" aria-selected="true">Übergang<span id="nX"></span></button>
    <button class="tab" data-tab="S" aria-selected="false">Scratch<span id="nS"></span></button>
    <button class="tab" data-tab="A" aria-selected="false">Ende A<span id="nA"></span></button>
    <button class="tab" data-tab="B" aria-selected="false">Anfang B<span id="nB"></span></button>
+   <button class="tab" data-tab="V" aria-selected="false">Lautstärke</button>
    <span class="opt" data-for="XAB">Länge<span id="elen"></span></span>
    <span class="opt" data-for="S" hidden><span id="ssrc"></span><span id="slen"></span></span>
   </div>
-  <div class="pads" id="gX"></div><div class="pads" id="gS" hidden></div><div class="pads" id="gA" hidden></div><div class="pads" id="gB" hidden></div>
+  <div class="pads" id="gX"></div><div class="pads" id="gS" hidden></div><div class="pads" id="gA" hidden></div><div class="pads" id="gB" hidden></div><div class="vol" id="gV" hidden></div>
  </section>
  <div class="bar">
   <button class="big" id="hear" disabled>Übergang anhören</button>
@@ -115,7 +122,6 @@ const MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88],MIN=[6.3
 const EL=[
   ['filter','Filter-Sweep','A wird mit einem Hochpass dünner – über die Effekt-Länge.','A'],
   ['bass','Bass raus','Der Bass von A wird auf einer Eins weggeschnitten.','A'],
-  ['fade','Ausblenden','A wird über die Effekt-Länge leiser.','A'],
   ['gate','Gate','Der letzte Takt von A wird in Sechzehnteln zerhackt.','A'],
   ['roll','Loop-Roll','Der letzte Takt von A stottert hoch: ½ → ¼ → ⅛ Schlag.','X'],
   ['brake','Bremse','A stoppt in den letzten 2 Schlägen wie eine Platte.','X'],
@@ -149,7 +155,6 @@ const EL=[
   ['sub','Sub-Drop','Ein tiefer Bass-Wumms auf der ersten Eins von B.','X'],
   ['horn','Air-Horn','DJ-Horn zum Einstieg von B.','X'],
   ['bopen','Filter auf','B startet dumpf und öffnet sich über die Effekt-Länge.','B'],
-  ['bfade','Einblenden','B wird über die Effekt-Länge lauter.','B'],
   ['blate','Bass später','Der Bass von B setzt erst nach der Effekt-Länge ein.','B']];
 const ELN=Object.fromEntries(EL.map(e=>[e[0],e[1]]));
 const F_=[[0,1]],T_=[[0,.12],[.25,.37],[.5,.62],[.75,.87]],FL=[[0,.45],[.55,1]],O2=[[0,.3],[.36,.63],[.7,1]];
@@ -161,7 +166,7 @@ const CURV={n:[.3,1.7,1.7,.3],fast:[.5,2.6,2.6,.5],tear:[.3,1.7,.25,1.7,.3],scri
 const GORD=['rewind','aloop','fill','downlift','siren','laser','claps','kicks',...Object.keys(SCR),'teaser','backspin','swell'];const NL=3;let CL={},gAuto=true;
 const GLEN={rewind:p=>p.pbA,echo:p=>4*p.pbA,aloop:p=>4*p.pbA,fill:p=>4*p.pbA,downlift:p=>2*p.pbA,siren:p=>4*p.pbB,laser:p=>4*p.pbB,claps:p=>4*p.pbB,kicks:p=>4*p.pbB,teaser:p=>4*p.pbB,backspin:p=>p.pbB,swell:p=>p.pbB,silence:p=>4*p.pbB,pause:p=>.5*p.pbB};
 try{const o=JSON.parse(localStorage.getItem('djmix-open2')||'null');if(o)OPEN=Object.assign(OPEN,o)}catch(_){}
-let ZOOM=16,SNAP='off',bOff=0,ED=null,scSrc='B',scLen=2,OPEN={A:false,X:true,B:false},TLX=null,TD=null,effLen=2,arT=0,ctx=null,master=null,PL=null,MIX=null,SEL=new Set(),userSel=false,busy=false,rpT=0,frame=0,col=['#f2452f','#2b3fd6'],ink='#12131a',lameP=null,FILE=null;
+let VOL={a:1,b:1,fx:1},FADE={a:0,b:0},ZOOM=null,SNAP='off',bOff=0,ED=null,scSrc='B',scLen=2,OPEN={A:false,X:true,B:false},TLX=null,TD=null,effLen=2,arT=0,ctx=null,master=null,PL=null,MIX=null,SEL=new Set(),userSel=false,busy=false,rpT=0,frame=0,col=['#f2452f','#2b3fd6'],ink='#12131a',lameP=null,FILE=null;
 const MP={src:null,playing:false,t0:0,off:0};
 const D=[0,1].map(i=>({i,el:$('#d'+i),buf:null,name:'',video:false,bpm:0,a:0,b:0,aAuto:true,bAuto:true,peaks:null,src:null,playing:false,t0:0,off:0,_tail:null,_head:null}));
 const say=m=>{$('#st').textContent=m};
@@ -340,12 +345,12 @@ async function renderMix(p,sel,whole){
   const A=p.A,B=p.B,pa=p.pbA,pb=p.pbB,sr=44100,L=layout(p,sel);
   const aFrom=whole?A.a:Math.max(A.a,p.aEnd-12),Ta=p.aEnd-aFrom,TB=Math.max(0,Ta+L.TB),bTo=whole?B.b:Math.min(B.b,p.bStart+12),lenB=Math.max(.05,bTo-p.bStart),total=Math.max(Ta+.1,TB+lenB),R=r=>Ta+r;
   const oc=new OAC(2,Math.ceil(total*sr),sr),cp=oc.createDynamicsCompressor();cp.threshold.value=-9;cp.ratio.value=3;cp.knee.value=6;cp.attack.value=.004;cp.release.value=.2;cp.connect(oc.destination);
-  const X=fx(oc,cp),has=k=>sel.has(k);
+  const fxo=oc.createGain();fxo.gain.value=VOL.fx;fxo.connect(cp);const X=fx(oc,fxo),has=k=>sel.has(k);
   /* Kette von A: Quelle → Filter → Pegel; Echo greift nach dem Filter ab */
   const EB=4*effLen*pa,EBb=4*effLen*pb,aIn=oc.createGain(),aLo=X.F('lowshelf',120),aF=X.F('highpass',20,.7),aV=oc.createGain(),aG=oc.createGain();aIn.connect(aLo);aLo.connect(aF);aF.connect(aV);aV.connect(aG);aG.connect(cp);
   if(has('filter')){aF.Q.value=3;aF.frequency.setValueAtTime(20,Math.max(0,Ta-EB));aF.frequency.exponentialRampToValueAtTime(1500,Ta)}
   if(has('bass')){aLo.gain.setValueAtTime(0,Math.max(0,Ta-EB));aLo.gain.linearRampToValueAtTime(-30,Math.max(0,Ta-EB)+.02)}
-  if(has('fade')){aV.gain.setValueAtTime(1,Math.max(0,Ta-EB));aV.gain.linearRampToValueAtTime(.12,Ta)}
+  aV.gain.setValueAtTime(VOL.a,0);if(FADE.a>0){const f0=Math.max(0,Ta-FADE.a);aV.gain.setValueAtTime(VOL.a,f0);aV.gain.linearRampToValueAtTime(.0001,Ta)}
   if(has('gate')){const st=pa/4;aG.gain.setValueAtTime(1,0);for(let j=0;j<16;j++){const t=Ta-4*pa+j*st;aG.gain.setValueAtTime(1,t);aG.gain.setValueAtTime(1,t+st*.55);aG.gain.linearRampToValueAtTime(0,t+st*.6);aG.gain.setValueAtTime(0,t+st-.003);aG.gain.linearRampToValueAtTime(1,t+st)}}
   if(has('snare')){const t0=Math.max(0,Ta-EB);let t=t0;while(t<Ta-1e-3){const u=(t-t0)/(Ta-t0),step=pa*(u<.5?1:u<.75?.5:u<.9?.25:.125);X.snare(t,.35+.6*u);t+=step}}
   if(has('hall')){const cv=oc.createConvolver(),n=Math.floor(sr*3.2),ir=oc.createBuffer(2,n,sr);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3)}cv.buffer=ir;
@@ -363,30 +368,30 @@ async function renderMix(p,sel,whole){
   for(const [k,t1,t2] of L.gap){
     if(R(t1)<0)continue;const T1=R(t1),T2=R(t2),D=T2-T1;
     if(k==='rewind'){const s=oc.createBufferSource(),g=oc.createGain(),hp=X.F('highpass',150);s.buffer=slice(oc,A.buf,p.aEnd-2*pa,2*pa,true);s.playbackRate.setValueAtTime(1.2,R(t1));s.playbackRate.linearRampToValueAtTime(2.8,R(t2));
-      g.gain.setValueAtTime(0,R(t1));g.gain.linearRampToValueAtTime(.85,R(t1)+.01);g.gain.setValueAtTime(.85,R(t2)-.06);g.gain.linearRampToValueAtTime(0,R(t2));s.connect(hp);hp.connect(g);g.connect(cp);s.start(R(t1));s.stop(R(t2))}
-    if(k==='teaser'){const hp=X.F('highpass',1500),g=oc.createGain();hp.connect(g);g.connect(cp);hp.frequency.setValueAtTime(1500,R(t1));hp.frequency.exponentialRampToValueAtTime(100,R(t2));g.gain.setValueAtTime(.4,R(t1));g.gain.linearRampToValueAtTime(.95,R(t2));
+      g.gain.setValueAtTime(0,R(t1));g.gain.linearRampToValueAtTime(.85,R(t1)+.01);g.gain.setValueAtTime(.85,R(t2)-.06);g.gain.linearRampToValueAtTime(0,R(t2));s.connect(hp);hp.connect(g);g.connect(fxo);s.start(R(t1));s.stop(R(t2))}
+    if(k==='teaser'){const hp=X.F('highpass',1500),g=oc.createGain();hp.connect(g);g.connect(fxo);hp.frequency.setValueAtTime(1500,R(t1));hp.frequency.exponentialRampToValueAtTime(100,R(t2));g.gain.setValueAtTime(.4,R(t1));g.gain.linearRampToValueAtTime(.95,R(t2));
       const u=D/4;let t=R(t1);for(const [l,n] of [[1,1],[.5,2],[.25,4],[.125,8]])for(let j=0;j<n;j++){X.chop(B.buf,t,p.bStart,Math.min(pb,l*u),1,hp);t+=l*u}}
     if(k.startsWith('sc_')){const [sb,so]=scSrc==='A'?[A.buf,Math.max(0,p.aEnd-.2)]:[B.buf,p.bStart],sl=.2,fw=slice(oc,sb,so,sl,false),bw=slice(oc,sb,so,sl,true),nbt=Math.max(1,Math.round(D/pb)),beat=D/nbt;let t=T1;
       for(let n=0;n<nbt;n++)for(const [dir,fr,gate,cv] of SCR[k]){const d=fr*beat;if(gate.length){const c=new Float32Array(CURV[cv||'n']),avg=c.reduce((a,b)=>a+b,0)/c.length,s=oc.createBufferSource(),g=oc.createGain();
         s.buffer=dir>0?fw:bw;s.playbackRate.setValueCurveAtTime(c,t,d*.98);g.gain.setValueAtTime(0,t);for(const [a,b] of gate){const ga=t+a*d,gb=t+b*d;g.gain.setValueAtTime(0,ga);g.gain.linearRampToValueAtTime(.9,ga+.003);g.gain.setValueAtTime(.9,Math.max(ga+.004,gb-.003));g.gain.linearRampToValueAtTime(0,gb)}
-        s.connect(g);g.connect(cp);s.start(t,dir>0?0:Math.max(0,sl-avg*d));s.stop(t+d)}t+=d}}
-    if(k==='aloop'){const b=D/4;for(let j=0;j<4;j++)X.chop(A.buf,T1+j*b,p.aEnd-4*pa+j*pa,Math.min(pa,b),.9,cp)}
+        s.connect(g);g.connect(fxo);s.start(t,dir>0?0:Math.max(0,sl-avg*d));s.stop(t+d)}t+=d}}
+    if(k==='aloop'){const b=D/4;for(let j=0;j<4;j++)X.chop(A.buf,T1+j*b,p.aEnd-4*pa+j*pa,Math.min(pa,b),.9,fxo)}
     if(k==='fill'){const b=D/4;X.kick(T1);[.5,1,1.5].forEach(x=>X.snare(T1+x*b,.7));[[2,220],[2.25,220],[2.5,180],[2.75,180],[3,150],[3.25,150],[3.5,120],[3.75,110]].forEach(([x,f],i)=>X.tom(T1+x*b,f,.6+.05*i))}
-    if(k==='downlift'){const f=X.F('bandpass',6000,2),g=oc.createGain();f.frequency.setValueAtTime(6000,T1);f.frequency.exponentialRampToValueAtTime(200,T2);g.gain.setValueAtTime(.16,T1);g.gain.linearRampToValueAtTime(0,T2);X.noise(T1,D,f,g);g.connect(cp)}
+    if(k==='downlift'){const f=X.F('bandpass',6000,2),g=oc.createGain();f.frequency.setValueAtTime(6000,T1);f.frequency.exponentialRampToValueAtTime(200,T2);g.gain.setValueAtTime(.16,T1);g.gain.linearRampToValueAtTime(0,T2);X.noise(T1,D,f,g);g.connect(fxo)}
     if(k==='siren'){const o=oc.createOscillator(),g=oc.createGain(),b=D/4;o.type='square';o.frequency.setValueAtTime(600,T1);for(let j=0;j<4;j++){o.frequency.linearRampToValueAtTime(1300,T1+j*b+b*.5);o.frequency.linearRampToValueAtTime(600,T1+(j+1)*b)}
-      const lp=X.F('lowpass',2500);g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.07,T1+.05);g.gain.setValueAtTime(.07,T2-.05);g.gain.linearRampToValueAtTime(0,T2);o.connect(lp);lp.connect(g);g.connect(cp);o.start(T1);o.stop(T2)}
-    if(k==='laser'){const b=D/4;for(let j=0;j<4;j++){const t=T1+j*b,o=oc.createOscillator(),g=oc.createGain();o.frequency.setValueAtTime(2600,t);o.frequency.exponentialRampToValueAtTime(180,t+.28);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.004);g.gain.exponentialRampToValueAtTime(.0005,t+.3);o.connect(g);g.connect(cp);o.start(t);o.stop(t+.32)}}
+      const lp=X.F('lowpass',2500);g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.07,T1+.05);g.gain.setValueAtTime(.07,T2-.05);g.gain.linearRampToValueAtTime(0,T2);o.connect(lp);lp.connect(g);g.connect(fxo);o.start(T1);o.stop(T2)}
+    if(k==='laser'){const b=D/4;for(let j=0;j<4;j++){const t=T1+j*b,o=oc.createOscillator(),g=oc.createGain();o.frequency.setValueAtTime(2600,t);o.frequency.exponentialRampToValueAtTime(180,t+.28);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.004);g.gain.exponentialRampToValueAtTime(.0005,t+.3);o.connect(g);g.connect(fxo);o.start(t);o.stop(t+.32)}}
     if(k==='claps'){const b=D/4;[0,1,2,3,3.5].forEach(x=>X.clap(T1+x*b,.9))}
     if(k==='kicks'){const b=D/4;[0,1,2,2.5,3,3.25,3.5,3.75].forEach((x,i)=>X.kick(T1+x*b,.6+.05*i))}
     if(k==='backspin'){const s=oc.createBufferSource(),g=oc.createGain(),hp=X.F('highpass',120);s.buffer=slice(oc,B.buf,p.bStart,3*pb,true);s.playbackRate.setValueAtTime(3.5,T1);s.playbackRate.exponentialRampToValueAtTime(.4,T2);
-      g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.85,T1+.01);g.gain.setValueAtTime(.85,T2-.05);g.gain.linearRampToValueAtTime(0,T2);s.connect(hp);hp.connect(g);g.connect(cp);s.start(T1);s.stop(T2)}
-    if(k==='swell'){const s=oc.createBufferSource(),g=oc.createGain(),hp=X.F('highpass',300);s.buffer=slice(oc,B.buf,p.bStart,D,true);g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.9,T2-.01);g.gain.linearRampToValueAtTime(0,T2);s.connect(hp);hp.connect(g);g.connect(cp);s.start(T1);s.stop(T2)}
+      g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.85,T1+.01);g.gain.setValueAtTime(.85,T2-.05);g.gain.linearRampToValueAtTime(0,T2);s.connect(hp);hp.connect(g);g.connect(fxo);s.start(T1);s.stop(T2)}
+    if(k==='swell'){const s=oc.createBufferSource(),g=oc.createGain(),hp=X.F('highpass',300);s.buffer=slice(oc,B.buf,p.bStart,D,true);g.gain.setValueAtTime(0,T1);g.gain.linearRampToValueAtTime(.9,T2-.01);g.gain.linearRampToValueAtTime(0,T2);s.connect(hp);hp.connect(g);g.connect(fxo);s.start(T1);s.stop(T2)}
   }
   if(has('riser'))X.riser(Math.max(0,Ta-EB),R(L.pauseAt));
   if(has('crash'))X.crash(TB);if(has('sub'))X.sub(TB);if(has('horn'))X.horn(TB);
   const sB=oc.createBufferSource(),gB=oc.createGain(),bLo=X.F('lowshelf',120),bLP=X.F('lowpass',20000,.7),bV=oc.createGain();sB.buffer=B.buf;sB.connect(gB);gB.connect(bLo);bLo.connect(bLP);bLP.connect(bV);bV.connect(cp);
   if(has('bopen')){bLP.Q.value=2;bLP.frequency.setValueAtTime(250,TB);bLP.frequency.exponentialRampToValueAtTime(20000,TB+EBb);bLP.Q.setValueAtTime(.7,TB+EBb)}
-  if(has('bfade')){bV.gain.setValueAtTime(.1,TB);bV.gain.linearRampToValueAtTime(1,TB+EBb)}
+  bV.gain.setValueAtTime(FADE.b>0?.0001:VOL.b,TB);if(FADE.b>0)bV.gain.linearRampToValueAtTime(VOL.b,TB+FADE.b)
   if(has('blate')){bLo.gain.setValueAtTime(-30,TB);bLo.gain.setValueAtTime(-30,TB+EBb-.02);bLo.gain.linearRampToValueAtTime(0,TB+EBb)}
   gB.gain.setValueAtTime(0,TB);gB.gain.linearRampToValueAtTime(1,TB+.004);gB.gain.setValueAtTime(1,total-(whole?3:1.5));gB.gain.linearRampToValueAtTime(0,total);sB.start(TB,p.bStart,lenB+.01);
   const buf=await oc.startRendering();let pk=0;for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<d.length;i++){const v=d[i]<0?-d[i]:d[i];if(v>pk)pk=v}}
@@ -395,7 +400,7 @@ async function renderMix(p,sel,whole){
 }
 async function make(whole){
   const p=makePlan();if(!p){say('Lade zuerst zwei Songs.');return null}PL=p;
-  const key=[whole,effLen,scSrc,scLen,gAuto?'a':bOff.toFixed(3),JSON.stringify(CL),[...SEL].sort().join(','),p.aEnd.toFixed(3),p.bStart.toFixed(3),D[0].name,D[1].name].join('|');
+  const key=[whole,JSON.stringify(VOL),JSON.stringify(FADE),effLen,scSrc,scLen,gAuto?'a':bOff.toFixed(3),JSON.stringify(CL),[...SEL].sort().join(','),p.aEnd.toFixed(3),p.bStart.toFixed(3),D[0].name,D[1].name].join('|');
   if(MIX&&MIX.key===key)return MIX;
   busy=true;stopAll();ui();say(whole?'Baue den ganzen Mix…':'Baue den Übergang…');await tick();
   try{const m=await renderMix(p,SEL,whole);MIX={...m,key,peaks:peaks(m.buf,700)};{const N=700,dc=m.total/N,la=new Float32Array(N),lb=new Float32Array(N),ga=gmax(p.A),gb=gmax(p.B),aFrom=p.aEnd-m.Ta;for(let i=0;i<N;i++){const t=i*dc;if(t<m.Ta)la[i]=pk(p.A.buf,aFrom+t,aFrom+t+dc)/ga;if(t>=m.TB){const sb=p.bStart+t-m.TB;if(sb<p.B.buf.duration)lb[i]=pk(p.B.buf,sb,sb+dc)/gb}}MIX.lanes={la,lb,gap:layout(p,SEL).gap,sel:new Set(SEL)}}FILE=null;$('#share').disabled=true;
@@ -440,7 +445,7 @@ function drawTL(){
   if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}const g=cv.getContext('2d');g.clearRect(0,0,W,H);
   const p=PL,fs=11*dpr;g.font=`600 ${fs}px Archivo,sans-serif`;
   if(!p){g.fillStyle='#ffffff30';g.fillRect(0,H/2,W,dpr);g.fillStyle='#a9aed8';g.fillText('A + B laden',8*dpr,H/2-8*dpr);TLX=null;return}
-  const L=layout(p,SEL),G=L.TB,half=ZOOM*.45,v0=-half,v1=Math.max(G,0)+half,X=t=>(t-v0)/(v1-v0)*W,T=x=>v0+x/W*(v1-v0);TLX={v0,v1,G,Gfx:L.Gfx};
+  const L=layout(p,SEL),G=L.TB,fa=Math.max(p.aEnd-p.A.a,1),fb=Math.max(p.B.b-p.bStart,1),fit=fa+Math.max(G,0)+fb+.6,v0=ZOOM==null?Math.min(-fa,G)-.3:-ZOOM*.45,v1=ZOOM==null?Math.max(G,0)+fb+.3:Math.max(G,0)+ZOOM*.45,X=t=>(t-v0)/(v1-v0)*W,T=x=>v0+x/W*(v1-v0);TLX={v0,v1,G,Gfx:L.Gfx,fit};
   const cA=(getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#ff5a45'),cB=(getComputedStyle(document.documentElement).getPropertyValue('--b').trim()||'#7088ff'),Y='#ffd23f',pa=p.pbA,pb=p.pbB,EB=4*effLen*pa,EBb=4*effLen*pb,has=k=>SEL.has(k);
   const top=16*dpr,bot=H-18*dpr,lh=bot-top,hA=lh*.3,hF=lh*.4,yA=top,yF=top+hA,yB=yF+hF,hB=lh-hA-hF,lnH=hF/NL,A=p.A,B=p.B,gA=gmax(A),gB=gmax(B);
   g.fillStyle='#ffffff09';g.fillRect(0,yA,W,hA-3*dpr);g.fillRect(0,yB+3*dpr,W,hB-3*dpr);
@@ -450,13 +455,13 @@ function drawTL(){
   /* Wellenformen */
   const step=2*dpr,dt=(v1-v0)*step/W,mA=yA+(hA-3*dpr)/2,hhA=(hA-3*dpr)/2-3*dpr,mB=yB+3*dpr+(hB-3*dpr)/2,hhB=(hB-3*dpr)/2-3*dpr;
   for(let x=0;x<W;x+=step){const t=T(x);
-    const sa=p.aEnd+t;if(sa>=0&&sa<A.buf.duration){const on=t<=0;let h=Math.max(dpr,pk(A.buf,sa,sa+dt)/gA*hhA),a=on?1:.16;
+    const sa=p.aEnd+t;if(sa>=0&&sa<A.buf.duration){const on=t<=0;let h=Math.max(dpr,pk(A.buf,sa,sa+dt)/gA*hhA*Math.min(1.2,VOL.a)*(on&&FADE.a>0&&t>-FADE.a?-t/FADE.a:1)),a=on?1:.16;
       if(on&&t>-EB){const u=(t+EB)/EB;if(has('filter'))a*=1-.6*u;if(has('fade'))h*=1-.85*u;if(has('bass'))h*=.7}
       if(on&&has('gate')&&t>-4*pa&&(((t+4*pa)/(pa/4))%1)>.6)h=0;
       if(on&&has('brake')&&t>-2*pa)h*=1-(t+2*pa)/(2*pa)*.85;
       if(on&&has('roll')&&t>-4*pa){const u=(t+4*pa)/pa;let gl,s0;if(u<2){gl=.5;s0=0}else if(u<3){gl=.25;s0=2}else{gl=.125;s0=3}if(((u-s0)%gl)>gl*.7)h=0}
       g.globalAlpha=a;g.fillStyle=cA;g.fillRect(x,mA-h,step-dpr*.5,2*h)}
-    const sb=p.bStart+(t-G);if(sb>=0&&sb<B.buf.duration){const on=t>=G;let h=Math.max(dpr,pk(B.buf,sb,sb+dt)/gB*hhB),a=on?1:.16;
+    const sb=p.bStart+(t-G);if(sb>=0&&sb<B.buf.duration){const on=t>=G;let h=Math.max(dpr,pk(B.buf,sb,sb+dt)/gB*hhB*Math.min(1.2,VOL.b)*(on&&FADE.b>0&&t-G<FADE.b?(t-G)/FADE.b:1)),a=on?1:.16;
       if(on){const u=Math.min(1,(t-G)/EBb);if(has('bfade'))h*=.15+.85*u;if(has('bopen'))a*=.35+.65*u;if(has('blate')&&t-G<EBb)h*=.7}
       g.globalAlpha=a;g.fillStyle=cB;g.fillRect(x,mB-h,step-dpr*.5,2*h)}}
   g.globalAlpha=1;
@@ -475,6 +480,11 @@ function drawTL(){
   if(has('echo')||has('hall')){}
   {const bx=['crash','sub','horn'].filter(has).map(k=>ELN[k]);if(bx.length){const t=bx.join(' + '),w=g.measureText(t).width,x=Math.min(W-w-4*dpr,X(G)+14*dpr);g.fillStyle='rgba(0,0,0,.6)';g.fillRect(x-3*dpr,yB+5*dpr,w+6*dpr,fs+4*dpr);g.fillStyle=Y;g.fillText(t,x,yB+fs+6*dpr)}}
   /* Griffe */
+  {const lvY=(y,h,v)=>y+h-Math.min(1.5,v)/1.5*h,ya0=yA+2*dpr,ha=hA-7*dpr,yb0=yB+5*dpr,hb=hB-8*dpr,fA=Math.max(.001,FADE.a),xa=X(-FADE.a),xb=X(G+FADE.b);
+   g.strokeStyle='#ffffffd0';g.lineWidth=1.5*dpr;g.beginPath();g.moveTo(0,lvY(ya0,ha,VOL.a));g.lineTo(xa,lvY(ya0,ha,VOL.a));g.lineTo(X(0),lvY(ya0,ha,0));g.stroke();
+   g.beginPath();g.moveTo(X(G),lvY(yb0,hb,FADE.b>0?0:VOL.b));g.lineTo(xb,lvY(yb0,hb,VOL.b));g.lineTo(W,lvY(yb0,hb,VOL.b));g.stroke();
+   for(const [x,y,on] of [[xa,lvY(ya0,ha,VOL.a),ED&&ED.mode==='volA'],[xb,lvY(yb0,hb,VOL.b),ED&&ED.mode==='volB']]){g.fillStyle=on?'#ffd23f':'#fff';g.beginPath();g.arc(x,y,6*dpr,0,7);g.fill();g.strokeStyle='#12131a';g.lineWidth=2*dpr;g.stroke()}
+   g.font=`600 ${10*dpr}px Archivo,sans-serif`;g.fillStyle='#fff';const ta=Math.round(VOL.a*100)+'%',tb=Math.round(VOL.b*100)+'%';g.fillText(ta,Math.max(14*dpr,xa-g.measureText(ta).width-9*dpr),lvY(ya0,ha,VOL.a)-5*dpr);g.fillText(tb,Math.min(W-g.measureText(tb).width-2*dpr,xb+9*dpr),lvY(yb0,hb,VOL.b)+14*dpr);g.font=`600 ${fs}px Archivo,sans-serif`}
   const grip=(x,y,h,on)=>{g.fillStyle=on?'#fff':Y;g.fillRect(x-1.5*dpr,y,3*dpr,h);g.beginPath();g.roundRect?g.roundRect(x-7*dpr,y+h/2-14*dpr,14*dpr,28*dpr,5*dpr):g.rect(x-7*dpr,y+h/2-14*dpr,14*dpr,28*dpr);g.fill();g.fillStyle='#12131a';for(const d of [-4,0,4])g.fillRect(x-3*dpr,y+h/2+d*dpr-.5*dpr,6*dpr,dpr)};
   grip(X(0),yA,hA-3*dpr,ED&&ED.mode==='trimA');grip(X(G),yB+3*dpr,hB-3*dpr,ED&&(ED.mode==='trimB'||ED.mode==='moveB'));
   /* Beschriftung */
@@ -595,10 +605,15 @@ document.querySelector('.fxp').onclick=e=>{const b=e.target.closest('.fx');if(!b
 {const tl=$('#tl');
  tl.onpointerdown=e=>{if(!PL||!TLX||busy)return;const r=tl.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,H=r.height,spp=(TLX.v1-TLX.v0)/r.width,top=16,lh=H-34,yF=top+lh*.3,yB=yF+lh*.4,lnH=lh*.4/NL,xG=(TLX.G-TLX.v0)/spp,tt=TLX.v0+x*spp;
    let mode=y<yF?'trimA':y>=yB?(Math.abs(x-xG)<28?'trimB':'moveB'):'moveB',clip=null,c0=null;
-   if(y>=yF&&y<yB){const ln=Math.min(NL-1,Math.floor((y-yF)/lnH));for(const [k,c] of Object.entries(CL))if(c.lane===ln&&tt>=c.start-6*spp&&tt<=c.start+c.len+6*spp){clip=k;c0={...c};mode=Math.abs(tt-(c.start+c.len))<14*spp?'resize':'clip'}}
-   ED={mode,clip,c0,sx:e.clientX,sy:e.clientY,lnH,spp,a0:PL.aEnd,b0:PL.bStart,off0:bOff,G0:TLX.G,Gfx:TLX.Gfx,moved:false};try{tl.setPointerCapture(e.pointerId)}catch(_){}drawTL()};
+   {const lvY=(yy,h,v)=>yy+h-Math.min(1.5,v)/1.5*h,xa=(-FADE.a-TLX.v0)/spp,xb=(TLX.G+FADE.b-TLX.v0)/spp,ha=lh*.3-7,hb=lh*.3-8,ya=lvY(top+2,ha,VOL.a),yb=lvY(yB+5,hb,VOL.b);
+    if(Math.hypot(x-xa,y-ya)<22)mode='volA';else if(Math.hypot(x-xb,y-yb)<22)mode='volB'}
+   if(mode!=='volA'&&mode!=='volB'&&y>=yF&&y<yB){const ln=Math.min(NL-1,Math.floor((y-yF)/lnH));for(const [k,c] of Object.entries(CL))if(c.lane===ln&&tt>=c.start-6*spp&&tt<=c.start+c.len+6*spp){clip=k;c0={...c};mode=Math.abs(tt-(c.start+c.len))<14*spp?'resize':'clip'}}
+   ED={mode,clip,c0,top,lh,yB,fa0:FADE.a,fb0:FADE.b,va0:VOL.a,vb0:VOL.b,sx:e.clientX,sy:e.clientY,lnH,spp,a0:PL.aEnd,b0:PL.bStart,off0:bOff,G0:TLX.G,Gfx:TLX.Gfx,moved:false};try{tl.setPointerCapture(e.pointerId)}catch(_){}drawTL()};
  tl.onpointermove=e=>{if(!ED||!PL)return;const dt=(e.clientX-ED.sx)*ED.spp,p=PL,A=p.A,B=p.B;if(Math.abs(e.clientX-ED.sx)>2||Math.abs(e.clientY-ED.sy)>6)ED.moved=true;if(!ED.moved)return;
    const st=SNAP==='bar'?4*p.pbA:p.pbA,sn=v=>SNAP==='off'?v:Math.round(v/st)*st;
+   if(ED.mode==='volA'||ED.mode==='volB'){const w=ED.mode==='volA'?'a':'b',h=ED.lh*.3-8,dy=(e.clientY-ED.sy)/h*1.5;
+     if(w==='a'){FADE.a=Math.max(0,Math.min(p.aEnd-p.A.a,ED.fa0-dt));VOL.a=Math.max(0,Math.min(1.5,ED.va0-dy))}else{FADE.b=Math.max(0,Math.min(p.B.b-p.bStart,ED.fb0+dt));VOL.b=Math.max(0,Math.min(1.5,ED.vb0-dy))}
+     renderVol();drawTL();return}
    if(ED.mode==='clip'){const c=CL[ED.clip];if(!c)return;c.start=Math.max(-4*p.pbA,sn(ED.c0.start+dt));c.lane=Math.max(0,Math.min(NL-1,ED.c0.lane+Math.round((e.clientY-ED.sy)/ED.lnH)));drawTL();return}
    if(ED.mode==='resize'){const c=CL[ED.clip];if(!c)return;c.len=Math.max(.08,sn(ED.c0.start+ED.c0.len+dt)-c.start);drawTL();return}
    if(ED.mode==='trimA'){let v=gsnap(ED.a0+dt,p.ta.db,p.pbA,'round');v=Math.min(A.buf.duration,Math.max(A.a+.05,v));p.aEnd=v;p.early=false;A.b=Math.min(A.buf.duration,v+1e-3);A.bAuto=false}
@@ -606,10 +621,19 @@ document.querySelector('.fxp').onclick=e=>{const b=e.target.closest('.fx');if(!b
    else{gAuto=false;bOff=sn(ED.G0+dt)}
    renderPlan();drawTL();ui()};
  tl.onpointerup=tl.onpointercancel=()=>{if(!ED)return;const m=ED.moved;ED=null;drawTL();if(m){replan();autoHear()}}}
-$('#zin').onclick=()=>{ZOOM=Math.max(2,ZOOM/1.6);drawTL()};$('#zout').onclick=()=>{ZOOM=Math.min(80,ZOOM*1.6);drawTL()};
+$('#zin').onclick=()=>{const sp=TLX?TLX.v1-TLX.v0:16;ZOOM=Math.max(2,(ZOOM||sp)/1.6);drawTL()};$('#zout').onclick=()=>{if(ZOOM==null)return;ZOOM*=1.6;if(TLX&&ZOOM>=TLX.fit)ZOOM=null;drawTL()};$('#zfit').onclick=()=>{ZOOM=null;drawTL()};
+function fadeOpts(w){const pb=PL?(w==='a'?PL.pbA:PL.pbB):.5;return[['hart',0],['kurz',pb],['mittel',4*pb],['lang',16*pb]]}
+function renderVol(){const fo=w=>fadeOpts(w).map(([l,v])=>`<button class="chip" data-f="${w}" data-v="${v}" aria-pressed="${Math.abs(FADE[w]-v)<.02}">${l}</button>`).join('');
+  $('#gV').innerHTML=`<div class="vrow"><b class="va">A</b><input type="range" min="0" max="150" step="1" value="${Math.round(VOL.a*100)}" data-vk="a" aria-label="Lautstärke A"><output>${Math.round(VOL.a*100)} %</output><span class="lbl">ausblenden</span>${fo('a')}</div>
+  <div class="vrow"><b class="vb">B</b><input type="range" min="0" max="150" step="1" value="${Math.round(VOL.b*100)}" data-vk="b" aria-label="Lautstärke B"><output>${Math.round(VOL.b*100)} %</output><span class="lbl">einblenden</span>${fo('b')}</div>
+  <div class="vrow"><b class="vf">FX</b><input type="range" min="0" max="150" step="1" value="${Math.round(VOL.fx*100)}" data-vk="fx" aria-label="Lautstärke Effekte"><output>${Math.round(VOL.fx*100)} %</output></div>`}
 function renderSnap(){$('#snap').innerHTML=`<button class="chip" aria-label="Einrasten">Raster: ${({off:'frei',beat:'Schlag',bar:'Takt'})[SNAP]}</button>`}
+renderVol();
+$('#gV').addEventListener('input',e=>{const r=e.target.closest('input[data-vk]');if(!r)return;VOL[r.dataset.vk]=+r.value/100;r.nextElementSibling.textContent=r.value+' %';drawTL()});
+$('#gV').addEventListener('change',()=>autoHear());
+$('#gV').addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;FADE[b.dataset.f]=+b.dataset.v;renderVol();drawTL();autoHear()});
 renderSnap();$('#snap').onclick=()=>{SNAP=({off:'beat',beat:'bar',bar:'off'})[SNAP];renderSnap()};
-document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;const k=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));['X','S','A','B'].forEach(g=>$('#g'+g).hidden=g!==k);document.querySelectorAll('.opt').forEach(o=>o.hidden=!o.dataset.for.includes(k))});
+document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;const k=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));['X','S','A','B','V'].forEach(g=>$('#g'+g).hidden=g!==k);document.querySelectorAll('.opt').forEach(o=>o.hidden=!o.dataset.for.includes(k))});
 document.querySelectorAll('details.grp').forEach(d=>d.addEventListener('toggle',()=>{OPEN[d.dataset.g]=d.open;try{localStorage.setItem('djmix-open2',JSON.stringify(OPEN))}catch(_){}}));
 $('#ssrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;scSrc=b.dataset.sv;renderPads();drawTL();autoHear()};
 $('#slen').onclick=e=>{const b=e.target.closest('button');if(!b)return;scLen=+b.dataset.sl;renderPads();renderPlan();drawTL();autoHear()};

@@ -20,6 +20,8 @@ Spur **A** oben, drei Effekt-Spuren **FX1–FX3** in der Mitte, Spur **B** unten
 - **A-Ende ziehen:** irgendwo in Spur A seitlich ziehen – A hört früher oder später auf.
 - **B verschieben:** in Spur B ziehen – Lücke größer/kleiner, B über die Effekte oder über A legen.
 - **B-Anfang kürzen:** die linke Kante (gelber Griff) von B ziehen.
+- **Lautstärke in den Spuren:** In A und B liegt eine weiße Lautstärke-Linie mit Griff. Hoch/runter = lauter/leiser, seitlich = wie lang A ausblendet bzw. B einblendet.
+- **Ansicht:** startet mit „Alles“ (beide Spuren komplett), + / − zoomt zum Übergang, ⤢ zeigt wieder alles.
 - **Einrasten:** Aus (ganz frei, auf Zehntelsekunden), Schlag oder Takt. **Zoom** − / + für feine Änderungen.
 - Kein Mindestabstand mehr – auch „Von“/„Bis“ in den Decks lassen sich beliebig kürzen.
 
@@ -28,8 +30,9 @@ Spur **A** oben, drei Effekt-Spuren **FX1–FX3** in der Mitte, Spur **B** unten
 |---|---|
 | Übergang (offen) | Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne, Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Crash, Sub-Drop, Air-Horn |
 | Scratches (im Übergang) | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
-| Ende von A (zugeklappt) | Filter-Sweep, Bass raus, Ausblenden, Gate |
-| Anfang von B (zugeklappt) | Filter auf, Einblenden, Bass später |
+| Ende von A | Filter-Sweep, Bass raus, Gate |
+| Anfang von B | Filter auf, Bass später |
+| Lautstärke | Regler für A, B und Effekte (0–150 %), Ausblenden A / Einblenden B: hart, kurz, mittel, lang |
 
 „Übergang anhören“ spielt eine Probe (12 s A, Übergang, 12 s B) und baut sie nach jeder Änderung neu.
 
