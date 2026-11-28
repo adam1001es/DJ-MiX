@@ -15,10 +15,10 @@ Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A,
 ## Übergang – das Herzstück
 
 ### Spuren
-Unten im Übergang liegen zwei Spuren mit echter Wellenform – **A** oben, **B** unten – und dazwischen die Effekt-Spur. Die Spuren bleiben beim Scrollen am unteren Rand sichtbar.
+Spur **A** oben, drei Effekt-Spuren **FX1–FX3** in der Mitte, Spur **B** unten. Effekte sind Clips: neue Effekte stapeln sich auf den freien FX-Spuren, damit der Übergang kurz bleiben kann. Clips lassen sich seitlich verschieben, hoch/runter auf eine andere FX-Spur ziehen und an der rechten Kante länger/kürzer ziehen. B liegt anfangs direkt hinter dem letzten Clip und lässt sich frei darüber oder dahinter schieben. Die Spuren bleiben beim Scrollen am unteren Rand sichtbar.
 
 - **A-Ende ziehen:** irgendwo in Spur A seitlich ziehen – A hört früher oder später auf.
-- **B verschieben:** in Spur B ziehen – Lücke größer/kleiner oder B überlappt A.
+- **B verschieben:** in Spur B ziehen – Lücke größer/kleiner, B über die Effekte oder über A legen.
 - **B-Anfang kürzen:** die linke Kante (gelber Griff) von B ziehen.
 - **Einrasten:** Aus (ganz frei, auf Zehntelsekunden), Schlag oder Takt. **Zoom** − / + für feine Änderungen.
 - Kein Mindestabstand mehr – auch „Von“/„Bis“ in den Decks lassen sich beliebig kürzen.
@@ -26,7 +26,7 @@ Unten im Übergang liegen zwei Spuren mit echter Wellenform – **A** oben, **B*
 ### Effekte
 | Bereich | Effekte |
 |---|---|
-| Übergang (offen) | Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne, Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Stille, Pause, Crash, Sub-Drop, Air-Horn |
+| Übergang (offen) | Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne, Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Crash, Sub-Drop, Air-Horn |
 | Scratches (im Übergang) | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
 | Ende von A (zugeklappt) | Filter-Sweep, Bass raus, Ausblenden, Gate |
 | Anfang von B (zugeklappt) | Filter auf, Einblenden, Bass später |
