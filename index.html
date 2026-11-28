@@ -102,7 +102,7 @@ main{display:grid;gap:16px;padding:20px max(4vw,14px);max-width:1240px;margin:0 
 .out[hidden]{display:none}
 .oh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .oh span{color:var(--mute);font-size:15px}
-.owf{height:120px}
+.owf{height:clamp(170px,26vw,220px)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--mute);margin-bottom:14px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .dl{min-height:52px;padding:0 20px;border-radius:14px;border:0;background:var(--key);color:#12131a;font:800 17px Archivo,sans-serif;cursor:pointer;box-shadow:0 3px 0 #c99a00}
@@ -179,7 +179,7 @@ footer{color:#ffffffd9;font-size:14px;padding:0 max(4vw,14px) 32px;max-width:124
  <section class="out" id="out" hidden aria-label="Fertiger Mix">
   <div class="oh"><h2>Dein Mix</h2><span id="olen"></span></div>
   <div class="wf owf"><canvas id="ow" aria-label="Wellenform des Mix, tippen spult dorthin"></canvas></div>
-  <div class="legend"><span><i style="background:var(--a)"></i>Song A</span><span><i style="background:var(--key)"></i>Übergang</span><span><i style="background:var(--b)"></i>Song B</span></div>
+  <div class="legend"><span><i style="background:var(--a)"></i>Spur A</span><span><i style="background:var(--key)"></i>Effekte</span><span><i style="background:var(--b)"></i>Spur B</span></div>
   <p id="oinfo"></p>
   <div class="ctl"><button class="play" id="op" aria-label="Mix abspielen"></button><button class="sm" id="ob">Zum Übergang</button><span class="time" id="ot">0:00</span></div>
   <div class="ctl" style="margin-top:14px"><button class="dl" id="mp3w">Ganzer Mix als MP3</button><button class="dl alt" id="mp3s">Nur Übergang als MP3</button><button class="sm" id="share" disabled>Teilen</button><a id="dlink" hidden>Falls nichts passiert: hier tippen</a></div>
@@ -480,7 +480,7 @@ async function make(whole){
   const key=[whole,effLen,scSrc,scLen,bOff.toFixed(3),[...SEL].sort().join(','),p.aEnd.toFixed(3),p.bStart.toFixed(3),D[0].name,D[1].name].join('|');
   if(MIX&&MIX.key===key)return MIX;
   busy=true;stopAll();ui();say(whole?'Baue den ganzen Mix…':'Baue den Übergang…');await tick();
-  try{const m=await renderMix(p,SEL,whole);MIX={...m,key,peaks:peaks(m.buf,700)};FILE=null;$('#share').disabled=true;
+  try{const m=await renderMix(p,SEL,whole);MIX={...m,key,peaks:peaks(m.buf,700)};{const N=700,dc=m.total/N,la=new Float32Array(N),lb=new Float32Array(N),ga=gmax(p.A),gb=gmax(p.B),aFrom=p.aEnd-m.Ta;for(let i=0;i<N;i++){const t=i*dc;if(t<m.Ta)la[i]=pk(p.A.buf,aFrom+t,aFrom+t+dc)/ga;if(t>=m.TB){const sb=p.bStart+t-m.TB;if(sb<p.B.buf.duration)lb[i]=pk(p.B.buf,sb,sb+dc)/gb}}MIX.lanes={la,lb,gap:layout(p,SEL).gap,sel:new Set(SEL)}}FILE=null;$('#share').disabled=true;
     $('#out').hidden=false;$('#olen').textContent=`${whole?'Ganzer Mix':'Probe'} · ${fmt(m.total)}`;{const gp=m.TB-m.Ta;$('#oinfo').textContent=`A ${fmt1(p.aEnd-m.Ta)}–${fmt1(p.aEnd)} → ${gp>=0?'Übergang '+gp.toFixed(1).replace('.',',')+' s':'Überlappung '+(-gp).toFixed(1).replace('.',',')+' s'} → B ab ${fmt1(p.bStart)}`}$('#dlink').hidden=true;$('#ost').textContent='';
     say('Fertig.');}
   catch(e){console.error(e);say('Das hat nicht geklappt ('+(e&&e.message||e)+'). Versuch „Nur Übergang“ oder kürzere Songs.');busy=false;ui();return null}
@@ -618,6 +618,20 @@ function wave(cv,pk,pos,dur,colorAt,shade){
   const g=cv.getContext('2d');g.clearRect(0,0,W,Ht);if(!pk){g.fillStyle=ink;g.globalAlpha=.2;g.fillRect(0,Ht/2-dpr,W,2*dpr);g.globalAlpha=1;return}
   const x0=pos/dur*W,N=pk.length,bw=W/N;for(let i=0;i<N;i++){const x=i*bw,h=Math.max(dpr,pk[i]*Ht*.86);g.fillStyle=colorAt(i/N*dur);g.globalAlpha=x<x0?1:.45;g.fillRect(x,(Ht-h)/2,Math.max(1,bw-dpr),h)}
   g.globalAlpha=1;if(shade)shade(g,W,Ht,dpr);g.fillStyle=ink;g.fillRect(x0-dpr,0,2*dpr,Ht)}
+function drawOut(pos){
+  const cv=$('#ow'),dpr=devicePixelRatio||1,W=Math.round(cv.clientWidth*dpr),H=Math.round(cv.clientHeight*dpr);if(!W||!H||!MIX||!MIX.lanes)return;
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}const g=cv.getContext('2d');g.clearRect(0,0,W,H);
+  const M=MIX,Lc=M.lanes,N=Lc.la.length,bw=W/N,x0=pos/M.total*W,X=t=>t/M.total*W,fs=11*dpr,pad=3*dpr,hA=H*.38,hF=H*.24,hB=H-hA-hF,yF=hA,yB=hA+hF;
+  g.fillStyle='rgba(0,0,0,.05)';g.fillRect(0,0,W,hA-pad);g.fillRect(0,yB+pad,W,hB-pad);
+  const lane=(arr,y,h,c)=>{const m=y+h/2,hh=h/2-pad;g.fillStyle=c;for(let i=0;i<N;i++){if(!arr[i])continue;const x=i*bw,v=Math.max(dpr*.5,arr[i]*hh);g.globalAlpha=x<x0?1:.45;g.fillRect(x,m-v,Math.max(1,bw-dpr*.5),2*v)}g.globalAlpha=1};
+  lane(Lc.la,0,hA-pad,col[0]);lane(Lc.lb,yB+pad,hB-pad,col[1]);
+  const mF=yF+hF/2,hh=hF/2-2*pad;for(const [k,a,b] of Lc.gap){const x1=X(M.Ta+a),x2=X(M.Ta+b);if(k==='silence'||k==='pause'){g.fillStyle='rgba(0,0,0,.08)';g.fillRect(x1,mF-hh,x2-x1,2*hh);continue}
+    g.fillStyle='#e0b000';g.globalAlpha=x1<x0?1:.6;g.fillRect(x1+.5*dpr,mF-hh,Math.max(dpr,x2-x1-dpr),2*hh);g.globalAlpha=1;const t=ELN[k],w=g.measureText(t).width;g.font=`600 ${fs}px Archivo,sans-serif`;if(x2-x1>w+6*dpr){g.fillStyle='#12131a';g.fillText(t,(x1+x2)/2-w/2,mF+fs*.35)}}
+  {const bx=['crash','sub','horn','roll','riser','echo','hall','snare','brake'].filter(k=>Lc.sel.has(k));if(bx.length){g.font=`600 ${fs}px Archivo,sans-serif`;const t=bx.map(k=>ELN[k]).join(' · '),w=g.measureText(t).width;g.fillStyle='#8a6d00';g.fillText(t,Math.max(2*dpr,Math.min(W-w-2*dpr,X(M.Ta)-w/2)),yF+fs)}}
+  g.fillStyle='#e0a800';g.fillRect(X(M.Ta)-dpr,0,2*dpr,hA+hF);g.fillRect(X(M.TB)-dpr,yF,2*dpr,hF+hB);
+  g.font=`700 ${fs}px Archivo,sans-serif`;g.fillStyle=ink;g.fillText('A',4*dpr,fs+2*dpr);g.fillText('FX',4*dpr,yF+fs+2*dpr);g.fillText('B',4*dpr,yB+fs+5*dpr);
+  g.fillStyle=ink;g.fillRect(x0-dpr,0,2*dpr,H);
+}
 function loop(){
   if(frame++%60===0){col=D.map(d=>getComputedStyle($('.tag',d.el)).backgroundColor);ink=getComputedStyle(document.body).color}
   for(const d of D){
@@ -627,7 +641,7 @@ function loop(){
       g.globalAlpha=1;g.fillStyle=ink;for(const x of [xa,xb]){g.fillRect(x-dpr,0,2*dpr,Ht);g.beginPath();g.moveTo(x-7*dpr,0);g.lineTo(x+7*dpr,0);g.lineTo(x,10*dpr);g.fill();g.beginPath();g.arc(Math.min(W-9*dpr,Math.max(9*dpr,x)),Ht/2,9*dpr,0,7);g.fill()}
       if(PL&&(PL.A===d||PL.B===d)){const t=d.i===0?PL.aEnd:PL.bStart,x=t/du*W,lab=d.i===0?'Schnitt':'Start',fs=11*dpr;g.fillStyle='#e0a800';g.fillRect(x-1.5*dpr,0,3*dpr,Ht);g.font=`700 ${fs}px Archivo,sans-serif`;const w=g.measureText(lab).width,lx=d.i===0?x-w-6*dpr:x+6*dpr;g.fillStyle='rgba(0,0,0,.65)';g.fillRect(lx-3*dpr,Ht-fs-8*dpr,w+6*dpr,fs+6*dpr);g.fillStyle='#ffd23f';g.fillText(lab,lx,Ht-7*dpr)}}:null);
   }
-  if(MIX){const pos=ctx?mpos():0;$('#ot').textContent=fmt(pos)+' / '+fmt(MIX.total);wave($('#ow'),MIX.peaks,pos,MIX.total,t=>t<MIX.Ta?col[0]:t<MIX.TB?'#e0b000':col[1])}
+  if(MIX){const pos=ctx?mpos():0;$('#ot').textContent=fmt(pos)+' / '+fmt(MIX.total);drawOut(pos)}
   requestAnimationFrame(loop);
 }
 
