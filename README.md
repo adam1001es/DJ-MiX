@@ -14,9 +14,14 @@ Zwei Videos oder Songs laden – die App nimmt nur den Ton. Zuerst kommt Song A,
 
 Die App analysiert das Ende von A und den Anfang von B (Tempo, Takt-Eins, Tonart, Energie, Drop) und schneidet genau auf der Eins. Den Übergang baust du selbst aus Effekten, die sich kombinieren lassen:
 
-| Ende von A | Dazwischen | Einstieg von B |
-|---|---|---|
-| Filter-Sweep, Bass raus, Ausblenden, Gate, Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne | Rückwärts, B-Teaser, Scratch, Pause | Crash, Sub-Drop, Air-Horn, Filter auf, Einblenden, Bass später |
+Alle Bereiche lassen sich auf- und zuklappen.
+
+| Bereich | Effekte |
+|---|---|
+| Ende von A | Filter-Sweep, Bass raus, Ausblenden, Gate, Loop-Roll, Bremse, Snare-Roll, Riser, Echo-Out, Hall-Fahne |
+| Dazwischen | Rückwärts, A-Loop, Drum-Fill, Downlifter, Sirene, Laser, Klatscher, Kick-Roll, B-Teaser, Backspin, Reverse-Swell, Stille, Pause |
+| Scratches | Baby, Release, Chirp, Transformer, Flare, 2-Click Orbit, Crab, Tear, Stab, Scribble, Drag – Sound von B-Anfang oder A-Ende, 1/2/4 Schläge |
+| Einstieg von B | Crash, Sub-Drop, Air-Horn, Filter auf, Einblenden, Bass später |
 
 „Effekt-Länge“ (1, 2 oder 4 Takte) gilt für Filter, Bass raus, Ausblenden, Snare-Roll, Riser sowie Filter auf, Einblenden und Bass später.
 
