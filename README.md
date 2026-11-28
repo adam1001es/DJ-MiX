@@ -22,6 +22,8 @@ Die App analysiert das Ende von A und den Anfang von B (Tempo, Takt-Eins, Tonart
 
 „Vorschlag“ wählt passende Effekte nach Tempo-Abstand. „Übergang anhören“ spielt eine Probe: die letzten 12 s von A, den Übergang und die ersten 12 s von B. Nach jeder Änderung wird die Probe automatisch neu gebaut.
 
+Mit dem Finger ziehen: In der Zeitleiste A oder B verschieben, um die Schnittstelle zu ändern (rastet auf jede Takt-Eins ein). In den Wellenformen die Griffe von „Von“ und „Bis“ ziehen, um zu kürzen.
+
 In jedem Deck zeigt „Im Mix“, welcher Teil benutzt wird. Die gelbe Linie „Schnitt“ (A) und „Start“ (B) zeigt die genaue Stelle auf der Takt-Eins.
 
 ## Export
